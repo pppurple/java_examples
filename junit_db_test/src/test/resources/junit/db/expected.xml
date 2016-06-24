@@ -1,0 +1,6 @@
+<dataset>
+    <shop id="1" name="apple" price="100" />
+    <shop id="2" name="orange" price="200" />
+    <shop id="3" name="banana" price="450" />
+    <shop id="4" name="pine" price="330" />
+</dataset>
