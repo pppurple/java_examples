@@ -9,6 +9,7 @@ import java.lang.reflect.Method;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.arrayContainingInAnyOrder;
 import static org.junit.Assert.*;
 
 /**
@@ -71,6 +72,7 @@ public class CircleTest {
             Method[] methods = clazz.getMethods();
             Method[] expected = {
                     clazz.getMethod("area"),
+                    clazz.getMethod("area", int.class),
                     clazz.getMethod("publicMethod"),
                     clazz.getMethod("toString"),
                     clazz.getMethod("wait"),
@@ -131,6 +133,7 @@ public class CircleTest {
             Method[] methods = clazz.getDeclaredMethods();
             Method[] expected = {
                     clazz.getDeclaredMethod("area"),
+                    clazz.getDeclaredMethod("area", int.class),
                     clazz.getDeclaredMethod("publicMethod"),
                     clazz.getDeclaredMethod("protectedMethod"),
                     clazz.getDeclaredMethod("defaultMethod"),
@@ -138,6 +141,52 @@ public class CircleTest {
                     clazz.getDeclaredMethod("toString")
             };
             assertThat(methods, is(arrayContainingInAnyOrder(expected)));
+        }
+    }
+
+    public static class Methodクラスのメソッド確認 {
+        @Test
+        public void メソッド名を取得() throws Exception {
+            Method method = Circle.class.getMethod("area");
+            String methodName = method.getName();
+            assertThat(methodName, is("area"));
+        }
+
+        @Test
+        public void メソッドが定義されたクラスを取得() throws Exception {
+            Method method = Circle.class.getMethod("area");
+            Class clazz = method.getDeclaringClass();
+            assertThat(clazz, is(typeCompatibleWith(Circle.class)));
+        }
+
+        @Test
+        public void メソッドの引数の型を取得() throws Exception {
+            Method method = Circle.class.getMethod("area", int.class);
+            Class<?>[] argClazz = method.getParameterTypes();
+            assertThat(argClazz, is(arrayContainingInAnyOrder(int.class)));
+        }
+
+        @Test
+        public void メソッドの戻り値の型を取得() throws Exception {
+            Method method = Circle.class.getMethod("area");
+            Class retClazz = method.getReturnType();
+            assertThat(retClazz, is(typeCompatibleWith(int.class)));
+        }
+
+        @Test
+        public void invokeで引数なしのメソッドを実行() throws Exception {
+            Circle circle = Circle.class.newInstance();
+            Method method = Circle.class.getMethod("publicMethod");
+            int ret = (int) method.invoke(circle);
+            assertThat(ret, is(1));
+        }
+
+        @Test
+        public void invokeで引数ありのメソッドを実行() throws Exception {
+            Circle circle = Circle.class.newInstance();
+            Method method = Circle.class.getMethod("area", int.class);
+            int ret = (int) method.invoke(circle, 3);
+            assertThat(ret, is(28));
         }
     }
 }
