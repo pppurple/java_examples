@@ -1,9 +1,11 @@
 package reflect;
 
+import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 import org.junit.experimental.runners.Enclosed;
 import org.junit.runner.RunWith;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -29,9 +31,15 @@ public class CircleTest {
 
     public static class getMethodの確認 {
         @Test
-        public void getMethodでMethodオブジェクトが取得できること() throws Exception {
+        public void getMethodでareaメソッドのMethodオブジェクトが取得できること() throws Exception {
             Method method = Circle.class.getMethod("area");
             assertThat(method.toString(), is("public int reflect.Circle.area()"));
+        }
+
+        @Test
+        public void getMethodで引数ありのareaメソッドのMethodオブジェクトが取得できること() throws Exception {
+            Method method = Circle.class.getMethod("area", int.class);
+            assertThat(method.toString(), is("public int reflect.Circle.area(int)"));
         }
 
         @Test
@@ -74,6 +82,7 @@ public class CircleTest {
                     clazz.getMethod("area"),
                     clazz.getMethod("area", int.class),
                     clazz.getMethod("publicMethod"),
+                    clazz.getMethod("staticMethod"),
                     clazz.getMethod("toString"),
                     clazz.getMethod("wait"),
                     clazz.getMethod("wait", long.class),
@@ -119,6 +128,12 @@ public class CircleTest {
             assertThat(pri.toString(), is("private int reflect.Circle.privateMethod()"));
         }
 
+        @Test
+        public void getDeclaredMethodでオーバーライドメソッドが取得できること() throws Exception {
+            Method toStr = Circle.class.getDeclaredMethod("toString");
+            assertThat(toStr.toString(), is("public java.lang.String reflect.Circle.toString()"));
+        }
+
         @Test(expected = NoSuchMethodException.class)
         public void getDeclaredMethodでhashCodeメソッドが取得できないこと() throws Exception {
             Method method = Circle.class.getDeclaredMethod("hashCode");
@@ -138,13 +153,14 @@ public class CircleTest {
                     clazz.getDeclaredMethod("protectedMethod"),
                     clazz.getDeclaredMethod("defaultMethod"),
                     clazz.getDeclaredMethod("privateMethod"),
+                    clazz.getDeclaredMethod("staticMethod"),
                     clazz.getDeclaredMethod("toString")
             };
             assertThat(methods, is(arrayContainingInAnyOrder(expected)));
         }
     }
 
-    public static class Methodクラスのメソッド確認 {
+    public static class Methodクラスでメソッド情報取得 {
         @Test
         public void メソッド名を取得() throws Exception {
             Method method = Circle.class.getMethod("area");
@@ -156,7 +172,7 @@ public class CircleTest {
         public void メソッドが定義されたクラスを取得() throws Exception {
             Method method = Circle.class.getMethod("area");
             Class clazz = method.getDeclaringClass();
-            assertThat(clazz, is(typeCompatibleWith(Circle.class)));
+            assertThat(clazz, is(equalTo(Circle.class)));
         }
 
         @Test
@@ -170,9 +186,11 @@ public class CircleTest {
         public void メソッドの戻り値の型を取得() throws Exception {
             Method method = Circle.class.getMethod("area");
             Class retClazz = method.getReturnType();
-            assertThat(retClazz, is(typeCompatibleWith(int.class)));
+            assertThat(retClazz, is(equalTo(int.class)));
         }
+    }
 
+    public static class invokeでメソッドコール {
         @Test
         public void invokeで引数なしのメソッドを実行() throws Exception {
             Circle circle = Circle.class.newInstance();
@@ -187,6 +205,13 @@ public class CircleTest {
             Method method = Circle.class.getMethod("area", int.class);
             int ret = (int) method.invoke(circle, 3);
             assertThat(ret, is(28));
+        }
+
+        @Test
+        public void invokeでstaticメソッドを実行() throws Exception {
+            Method method = Circle.class.getMethod("staticMethod");
+            int ret = (int) method.invoke(nullValue());
+            assertThat(ret, is(11));
         }
     }
 }
