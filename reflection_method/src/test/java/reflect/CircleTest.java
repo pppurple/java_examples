@@ -1,11 +1,9 @@
 package reflect;
 
-import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 import org.junit.experimental.runners.Enclosed;
 import org.junit.runner.RunWith;
 
-import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
