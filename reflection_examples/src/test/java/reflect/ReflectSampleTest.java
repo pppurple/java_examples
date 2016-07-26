@@ -8,8 +8,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
 import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.arrayContainingInAnyOrder;
 import static org.junit.Assert.*;
 
 /**
@@ -62,5 +62,61 @@ public class ReflectSampleTest {
         }
     }
 
+    public static class getFieldsの確認 {
+        @Test
+        public void getFieldsでフィールドオブジェクトが取得できること() throws Exception {
+            Class clazz = ReflectSample.class;
+            Field[] fields = clazz.getFields();
+            Field[] expected = {
+                    clazz.getField("pub")
+            };
+            assertThat(fields, is(arrayContainingInAnyOrder(expected)));
+        }
+    }
 
+    public static class getDeclaredFieldの確認 {
+        @Test
+        public void getModifiersでpublicフィールドのアクセス修飾子が取得できること() throws Exception {
+            Field field = ReflectSample.class.getDeclaredField("pub");
+            int mod = field.getModifiers();
+            assertThat(mod, is(Modifier.PUBLIC));
+        }
+
+        @Test
+        public void getModifiersでprotectedフィールドのアクセス修飾子が取得できること() throws Exception {
+            Field field = ReflectSample.class.getDeclaredField("pro");
+            int mod = field.getModifiers();
+            assertThat(mod, is(Modifier.PROTECTED));
+        }
+
+        @Test
+        public void getModifiersでdefaultフィールドのアクセス修飾子が取得できること() throws Exception {
+            Field field = ReflectSample.class.getDeclaredField("def");
+            int mod = field.getModifiers();
+            assertThat(mod, is(0));
+        }
+
+        @Test
+        public void getModifiersでprivateフィールドのアクセス修飾子が取得できること() throws Exception {
+            Field field = ReflectSample.class.getDeclaredField("pri");
+            int mod = field.getModifiers();
+            assertThat(mod, is(Modifier.PRIVATE));
+        }
+    }
+
+    public static class getDeclaredFieldsの確認 {
+        @Test
+        public void getDeclaredFieldsでフィールドオブジェクトが取得できること() throws Exception {
+            Class clazz = ReflectSample.class;
+            Field[] fields = clazz.getDeclaredFields();
+            Field[] expected = {
+                    clazz.getDeclaredField("pub"),
+                    clazz.getDeclaredField("pro"),
+                    clazz.getDeclaredField("def"),
+                    clazz.getDeclaredField("pri"),
+                    clazz.getDeclaredField("name")
+            };
+            assertThat(fields, is(arrayContainingInAnyOrder(expected)));
+        }
+    }
 }
