@@ -3,7 +3,7 @@ package reflect;
 /**
  * Created by pppurple on 2016/07/23.
  */
-public class ReflectFieldSample {
+public class ReflectFieldExample {
     public String pub = "public";
     protected String pro = "protected";
     String def = "default";
@@ -11,11 +11,11 @@ public class ReflectFieldSample {
 
     String name;
 
-    public ReflectFieldSample() {
+    public ReflectFieldExample() {
         this("no args");
     }
 
-    public ReflectFieldSample(String name) {
+    public ReflectFieldExample(String name) {
         this.name = name;
     }
 }

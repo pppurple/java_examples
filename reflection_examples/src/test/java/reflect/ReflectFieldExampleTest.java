@@ -16,56 +16,56 @@ import static org.junit.Assert.*;
  * Created by pppurple on 2016/07/23.
  */
 @RunWith(Enclosed.class)
-public class ReflectFieldSampleTest {
+public class ReflectFieldExampleTest {
     public static class getFieldの確認 {
         @Test
         public void getTypeでpublicフィールドの型が取得できること() throws Exception {
-            Field field = ReflectFieldSample.class.getField("pub");
+            Field field = ReflectFieldExample.class.getField("pub");
             Class type = field.getType();
             assertThat(type, is(equalTo(String.class)));
         }
 
         @Test(expected = java.lang.NoSuchFieldException.class)
         public void getTypeでprotectedフィールドの型が取得できないこと() throws Exception {
-            Field field = ReflectFieldSample.class.getField("pro");
+            Field field = ReflectFieldExample.class.getField("pro");
         }
 
         @Test(expected = java.lang.NoSuchFieldException.class)
         public void getTypeでdefaultフィールドの型が取得できないこと() throws Exception {
-            Field field = ReflectFieldSample.class.getField("def");
+            Field field = ReflectFieldExample.class.getField("def");
         }
 
         @Test(expected = java.lang.NoSuchFieldException.class)
         public void getTypeでprivateフィールドの型が取得できないこと() throws Exception {
-            Field field = ReflectFieldSample.class.getField("pri");
+            Field field = ReflectFieldExample.class.getField("pri");
         }
 
         @Test
         public void getNameでフィールドの名前が取得できること() throws Exception {
-            Field field = ReflectFieldSample.class.getField("pub");
+            Field field = ReflectFieldExample.class.getField("pub");
             String name = field.getName();
             assertThat(name, is("pub"));
         }
 
         @Test
         public void getModifiersでフィールドのアクセス修飾子が取得できること() throws Exception {
-            Field field = ReflectFieldSample.class.getField("pub");
+            Field field = ReflectFieldExample.class.getField("pub");
             int mod = field.getModifiers();
             assertThat(mod, is(Modifier.PUBLIC));
         }
 
         @Test
         public void toGenericStringでフィールドを表す文字列が取得できること() throws Exception {
-            Field field = ReflectFieldSample.class.getField("pub");
+            Field field = ReflectFieldExample.class.getField("pub");
             String generic = field.toGenericString();
-            assertThat(generic, is("public java.lang.String reflect.ReflectFieldSample.pub"));
+            assertThat(generic, is("public java.lang.String reflect.ReflectFieldExample.pub"));
         }
     }
 
     public static class getFieldsの確認 {
         @Test
         public void getFieldsでフィールドオブジェクトが取得できること() throws Exception {
-            Class clazz = ReflectFieldSample.class;
+            Class clazz = ReflectFieldExample.class;
             Field[] fields = clazz.getFields();
             Field[] expected = {
                     clazz.getField("pub")
@@ -77,28 +77,28 @@ public class ReflectFieldSampleTest {
     public static class getDeclaredFieldの確認 {
         @Test
         public void getModifiersでpublicフィールドのアクセス修飾子が取得できること() throws Exception {
-            Field field = ReflectFieldSample.class.getDeclaredField("pub");
+            Field field = ReflectFieldExample.class.getDeclaredField("pub");
             int mod = field.getModifiers();
             assertThat(mod, is(Modifier.PUBLIC));
         }
 
         @Test
         public void getModifiersでprotectedフィールドのアクセス修飾子が取得できること() throws Exception {
-            Field field = ReflectFieldSample.class.getDeclaredField("pro");
+            Field field = ReflectFieldExample.class.getDeclaredField("pro");
             int mod = field.getModifiers();
             assertThat(mod, is(Modifier.PROTECTED));
         }
 
         @Test
         public void getModifiersでdefaultフィールドのアクセス修飾子が取得できること() throws Exception {
-            Field field = ReflectFieldSample.class.getDeclaredField("def");
+            Field field = ReflectFieldExample.class.getDeclaredField("def");
             int mod = field.getModifiers();
             assertThat(mod, is(0));
         }
 
         @Test
         public void getModifiersでprivateフィールドのアクセス修飾子が取得できること() throws Exception {
-            Field field = ReflectFieldSample.class.getDeclaredField("pri");
+            Field field = ReflectFieldExample.class.getDeclaredField("pri");
             int mod = field.getModifiers();
             assertThat(mod, is(Modifier.PRIVATE));
         }
@@ -107,7 +107,7 @@ public class ReflectFieldSampleTest {
     public static class getDeclaredFieldsの確認 {
         @Test
         public void getDeclaredFieldsでフィールドオブジェクトが取得できること() throws Exception {
-            Class clazz = ReflectFieldSample.class;
+            Class clazz = ReflectFieldExample.class;
             Field[] fields = clazz.getDeclaredFields();
             Field[] expected = {
                     clazz.getDeclaredField("pub"),
