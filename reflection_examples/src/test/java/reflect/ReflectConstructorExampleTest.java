@@ -40,20 +40,6 @@ public class ReflectConstructorExampleTest {
         public void getConstructorでprivateコンストラクタが取得できないこと() throws Exception {
             Constructor cons = ReflectConstructorExample.class.getConstructor(int.class);
         }
-
-        @Test
-        public void getDeclaringClass() throws Exception {
-            Constructor cons = ReflectConstructorExample.class.getConstructor();
-            Class clazz = cons.getDeclaringClass();
-            assertThat(clazz, is(equalTo(ReflectConstructorExample.class)));
-        }
-
-        @Test
-        public void getName() throws Exception {
-            Constructor cons = ReflectConstructorExample.class.getConstructor();
-            String name = cons.getName();
-            assertThat(name, is("reflect.ReflectConstructorExample"));
-        }
     }
 
     public static class getConstructorsの確認 {
@@ -110,6 +96,22 @@ public class ReflectConstructorExampleTest {
                     clazz.getDeclaredConstructor(int.class)
             };
             assertThat(cons, is(arrayContainingInAnyOrder(expected)));
+        }
+    }
+
+    public static class Constructorクラスでコンストラクタ情報取得 {
+        @Test
+        public void getDeclaringClassでコンストラクタを宣言するクラスが取得できること() throws Exception {
+            Constructor cons = ReflectConstructorExample.class.getConstructor();
+            Class clazz = cons.getDeclaringClass();
+            assertThat(clazz, is(equalTo(ReflectConstructorExample.class)));
+        }
+
+        @Test
+        public void getNameでコンストラクタの名前が取得できること() throws Exception {
+            Constructor cons = ReflectConstructorExample.class.getConstructor();
+            String name = cons.getName();
+            assertThat(name, is("reflect.ReflectConstructorExample"));
         }
     }
 
