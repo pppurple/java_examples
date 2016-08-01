@@ -39,27 +39,6 @@ public class ReflectFieldExampleTest {
         public void getTypeでprivateフィールドの型が取得できないこと() throws Exception {
             Field field = ReflectFieldExample.class.getField("pri");
         }
-
-        @Test
-        public void getNameでフィールドの名前が取得できること() throws Exception {
-            Field field = ReflectFieldExample.class.getField("pub");
-            String name = field.getName();
-            assertThat(name, is("pub"));
-        }
-
-        @Test
-        public void getModifiersでフィールドのアクセス修飾子が取得できること() throws Exception {
-            Field field = ReflectFieldExample.class.getField("pub");
-            int mod = field.getModifiers();
-            assertThat(mod, is(Modifier.PUBLIC));
-        }
-
-        @Test
-        public void toGenericStringでフィールドを表す文字列が取得できること() throws Exception {
-            Field field = ReflectFieldExample.class.getField("pub");
-            String generic = field.toGenericString();
-            assertThat(generic, is("public java.lang.String reflect.ReflectFieldExample.pub"));
-        }
     }
 
     public static class getFieldsの確認 {
@@ -117,6 +96,29 @@ public class ReflectFieldExampleTest {
                     clazz.getDeclaredField("name")
             };
             assertThat(fields, is(arrayContainingInAnyOrder(expected)));
+        }
+    }
+
+    public static class Fieldクラスでフィールド情報取得 {
+        @Test
+        public void getNameでフィールドの名前が取得できること() throws Exception {
+            Field field = ReflectFieldExample.class.getField("pub");
+            String name = field.getName();
+            assertThat(name, is("pub"));
+        }
+
+        @Test
+        public void getModifiersでフィールドのアクセス修飾子が取得できること() throws Exception {
+            Field field = ReflectFieldExample.class.getField("pub");
+            int mod = field.getModifiers();
+            assertThat(mod, is(Modifier.PUBLIC));
+        }
+
+        @Test
+        public void toGenericStringでフィールドを表す文字列が取得できること() throws Exception {
+            Field field = ReflectFieldExample.class.getField("pub");
+            String generic = field.toGenericString();
+            assertThat(generic, is("public java.lang.String reflect.ReflectFieldExample.pub"));
         }
     }
 }
