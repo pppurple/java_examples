@@ -6,9 +6,11 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.hasItems;
 import static org.junit.Assert.*;
 
@@ -92,5 +94,24 @@ public class ProjectCoinExampleTest {
         }
 
         assertThat(sb.toString(), is("abcdefg"));
+    }
+
+    @Test
+    public void 安全な可変長引数() throws Exception {
+        List<String> list = new ArrayList<>();
+        List actual = add(list, "aaa", "bbb", "ccc");
+
+        List<String> expected = new ArrayList<>();
+        expected.add("aaa");
+        expected.add("bbb");
+        expected.add("ccc");
+
+        assertThat(actual, is(contains(expected.toArray())));
+    }
+
+    @SafeVarargs
+    public static <T> List<T> add(List<T> list, T... t) {
+        Arrays.stream(t).forEach(v -> list.add(v));
+        return list;
     }
 }
