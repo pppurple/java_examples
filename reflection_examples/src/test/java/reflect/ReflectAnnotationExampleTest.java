@@ -10,6 +10,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.arrayContainingInAnyOrder;
 import static org.junit.Assert.*;
 import static reflect.ReflectAnnotationExample.*;
 
@@ -18,7 +19,7 @@ import static reflect.ReflectAnnotationExample.*;
  */
 @RunWith(Enclosed.class)
 public class ReflectAnnotationExampleTest {
-    public static class Annotationクラス取得の確認 {
+    public static class getAnnotationの確認 {
         @Test
         public void Classクラスからアノテーションが取得できること() throws Exception {
             Class clazz = ReflectAnnotationExample.DeprecatedClass.class;
@@ -45,6 +46,31 @@ public class ReflectAnnotationExampleTest {
             Constructor cons = ReflectAnnotationExample.class.getConstructor(String.class);
             Annotation anno = cons.getAnnotation(ConstructorAnnotaion.class);
             assertThat(anno, is(ConstructorAnnotaion.class));
+        }
+    }
+
+    public static class getAnnotationsの確認 {
+        @Test
+        public void クラスのアノテーションが取得できること() throws Exception {
+            Class clazz = ReflectAnnotationExample.DeprecatedClass.class;
+            Annotation[] annos = clazz.getAnnotations();
+
+            Annotation[] expected = {
+                    clazz.getAnnotation(ClassAnnotation.class),
+                    clazz.getAnnotation(Deprecated.class)
+            };
+            assertThat(annos, is(arrayContainingInAnyOrder(expected)));
+        }
+
+        @Test
+        public void メソッドのアノテーションが取得できること() throws Exception {
+            Method method = ReflectAnnotationExample.class.getMethod("getName");
+            Annotation[] annos = method.getAnnotations();
+
+            Annotation[] expected = {
+                    method.getAnnotation(MethodAnnotation.class)
+            };
+            assertThat(annos, is(arrayContainingInAnyOrder(expected)));
         }
     }
 }
