@@ -11,6 +11,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * Created by pppurple on 2016/07/26.
  */
 public class ReflectAnnotationExample {
+
     @FieldAnnotation
     public String name;
 
@@ -24,8 +25,9 @@ public class ReflectAnnotationExample {
         return name;
     }
 
+    @Deprecated
     @ClassAnnotation
-    public static class DeprecatedClass {
+    public class DeprecatedClass {
 
     }
 

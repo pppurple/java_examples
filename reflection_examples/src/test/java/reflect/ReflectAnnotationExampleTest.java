@@ -9,6 +9,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.arrayContainingInAnyOrder;
 import static org.junit.Assert.*;
@@ -24,28 +25,28 @@ public class ReflectAnnotationExampleTest {
         public void Classクラスからアノテーションが取得できること() throws Exception {
             Class clazz = ReflectAnnotationExample.DeprecatedClass.class;
             Annotation anno = clazz.getAnnotation(ClassAnnotation.class);
-            assertThat(anno, is(ClassAnnotation.class));
+            assertThat(anno, is(instanceOf(ClassAnnotation.class)));
         }
 
         @Test
         public void Methodクラスからアノテーションが取得できること() throws Exception {
             Method method = ReflectAnnotationExample.class.getMethod("getName");
             Annotation anno = method.getAnnotation(MethodAnnotation.class);
-            assertThat(anno, is(MethodAnnotation.class));
+            assertThat(anno, is(instanceOf(MethodAnnotation.class)));
         }
 
         @Test
         public void Fieldクラスからアノテーションが取得できること() throws Exception {
             Field field = ReflectAnnotationExample.class.getField("name");
             Annotation anno = field.getAnnotation(FieldAnnotation.class);
-            assertThat(anno, is(FieldAnnotation.class));
+            assertThat(anno, is(instanceOf(FieldAnnotation.class)));
         }
 
         @Test
         public void Constructorクラスからアノテーションが取得できること() throws Exception {
             Constructor cons = ReflectAnnotationExample.class.getConstructor(String.class);
             Annotation anno = cons.getAnnotation(ConstructorAnnotaion.class);
-            assertThat(anno, is(ConstructorAnnotaion.class));
+            assertThat(anno, is(instanceOf(ConstructorAnnotaion.class)));
         }
     }
 
