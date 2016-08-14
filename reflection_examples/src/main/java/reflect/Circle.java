@@ -15,7 +15,11 @@ public class Circle {
     }
 
     public int area() {
-        return (int) (radius * radius * Math.PI);
+        return area(radius);
+    }
+
+    public int area(int r) {
+        return (int) (r * r * Math.PI);
     }
 
     public int publicMethod() {
@@ -32,6 +36,10 @@ public class Circle {
 
     private int privateMethod() {
         return 4;
+    }
+
+    public static int staticMethod() {
+        return 11;
     }
 
     @Override
