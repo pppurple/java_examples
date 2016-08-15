@@ -9,15 +9,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.hasItems;
-import static org.junit.Assert.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Created by pppurple on 2016/07/27.
+ * Created by pppurple on 2016/08/15.
  */
-public class ProjectCoinExampleTest {
+public class ProjectCoinTest {
     @Test
     public void swithで文字列が使用できる() throws Exception {
         String str = "bar";
@@ -35,14 +32,14 @@ public class ProjectCoinExampleTest {
             default:
                 str += "4";
         }
-        assertThat(str, is("bar2"));
+        assertThat(str).isEqualTo("bar2");
     }
 
     @Test
     public void 二進数リテラルが使用できる() throws Exception {
         int a = 0b0100;
 
-        assertThat(a, is(4));
+        assertThat(a).isEqualTo(4);
     }
 
     @Test
@@ -50,8 +47,8 @@ public class ProjectCoinExampleTest {
         int a = 1_000_000;
         int b = 0b0001_1000;
 
-        assertThat(a, is(1000000));
-        assertThat(b, is(24));
+        assertThat(a).isEqualTo(1000000);
+        assertThat(b).isEqualTo(24);
     }
 
     @Test
@@ -63,7 +60,7 @@ public class ProjectCoinExampleTest {
             message = e.getMessage();
         }
 
-        assertThat(message, is("Sample"));
+        assertThat(message).isEqualTo("Sample");
     }
 
     @Test
@@ -73,7 +70,7 @@ public class ProjectCoinExampleTest {
         list.add("bbb");
         list.add("ccc");
 
-        assertThat(list, hasItems("aaa", "bbb", "ccc"));
+        assertThat(list).containsOnly("aaa", "bbb", "ccc");
     }
 
     @Test
@@ -81,19 +78,15 @@ public class ProjectCoinExampleTest {
         StringBuilder sb = new StringBuilder();
 
         try (BufferedReader reader = new BufferedReader(new FileReader("src/main/java/javase7/samplefile.txt"))) {
-            for(;;) {
-                String line = reader.readLine();
-                if (line != null) {
-                    sb.append(line);
-                } else {
-                    break;
-                }
+            String line;
+            while((line = reader.readLine()) != null) {
+                sb.append(line);
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        assertThat(sb.toString(), is("abcdefg"));
+        assertThat(sb.toString()).isEqualTo("abcdefg");
     }
 
     @Test
@@ -101,17 +94,14 @@ public class ProjectCoinExampleTest {
         List<String> list = new ArrayList<>();
         List actual = add(list, "aaa", "bbb", "ccc");
 
-        List<String> expected = new ArrayList<>();
-        expected.add("aaa");
-        expected.add("bbb");
-        expected.add("ccc");
+        String[] expected = {"aaa", "bbb", "ccc"};
 
-        assertThat(actual, is(contains(expected.toArray())));
+        assertThat(actual).containsOnly(expected);
     }
 
     @SafeVarargs
     public static <T> List<T> add(List<T> list, T... t) {
-        Arrays.stream(t).forEach(v -> list.add(v));
+        Arrays.stream(t).forEach(list::add);
         return list;
     }
 }
