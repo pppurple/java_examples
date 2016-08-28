@@ -4,20 +4,19 @@ import org.junit.Test;
 import org.junit.experimental.runners.Enclosed;
 import org.junit.runner.RunWith;
 
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.function.*;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
 
 /**
  * Created by pppurple on 2016/08/12.
  */
 @RunWith(Enclosed.class)
-public class MethodReferenceExampleTest {
+public class MethodReferenceTest {
     public static class ClassMethodReference {
         @Test
         public void メソッド参照() throws Exception {
