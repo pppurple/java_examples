@@ -14,7 +14,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Created by pppurple on 2016/08/24.
  */
 @RunWith(Enclosed.class)
-public class LambdaExampleTest {
+public class LambdaTest {
     public static class 匿名クラスとラムダ式 {
         // 匿名クラス
         BinaryOperator<Integer> anonymous = new BinaryOperator<Integer>() {
