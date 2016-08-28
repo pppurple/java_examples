@@ -18,8 +18,7 @@ public class DefaultMethodTest {
 
     @Test
     public void デフォルトメソッド使用() throws Exception {
-        PrintWord p = new PrintWord() {
-        };
+        PrintWord p = new PrintWord() {};
         String actual = p.print("abc");
         String expected = "[abc]";
         assertThat(actual, is(expected));
