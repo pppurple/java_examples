@@ -2,8 +2,7 @@ package javase8;
 
 import org.junit.Test;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Created by pppurple on 2016/08/08.
@@ -21,7 +20,7 @@ public class DefaultMethodTest {
         PrintWord p = new PrintWord() {};
         String actual = p.print("abc");
         String expected = "[abc]";
-        assertThat(actual, is(expected));
+        assertThat(actual).isEqualTo(expected);
     }
 
     interface AbstractPrintWord extends PrintWord {
@@ -40,7 +39,7 @@ public class DefaultMethodTest {
 
         String actual = p.print("abc");
         String expected = "[[[abc]]]";
-        assertThat(actual, is(expected));
+        assertThat(actual).isEqualTo(expected);
     }
 
     interface MorePrintWord extends PrintWord {
@@ -55,7 +54,7 @@ public class DefaultMethodTest {
         PrintWord p = new MorePrintWord() {};
         String actual = p.print("abc");
         String expected = "[[[[[abc]]]]]";
-        assertThat(actual, is(expected));
+        assertThat(actual).isEqualTo(expected);
     }
 
     interface Root {
@@ -89,8 +88,6 @@ public class DefaultMethodTest {
         String actual = ab.method("ab");
         String expected = "A and B ab";
 
-        assertThat(actual, is(expected));
+        assertThat(actual).isEqualTo(expected);
     }
-
-
 }
