@@ -23,6 +23,21 @@ public class DefaultMethodTest {
         assertThat(actual).isEqualTo(expected);
     }
 
+    interface MorePrintWord extends PrintWord {
+        @Override
+        default String print(String word) {
+            return "[[[[[" + word + "]]]]]";
+        }
+    }
+
+    @Test
+    public void デフォルトメソッドのオーバーライドの確認() throws Exception {
+        PrintWord p = new MorePrintWord() {};
+        String actual = p.print("abc");
+        String expected = "[[[[[abc]]]]]";
+        assertThat(actual).isEqualTo(expected);
+    }
+
     interface AbstractPrintWord extends PrintWord {
         @Override
         String print(String word);
@@ -39,21 +54,6 @@ public class DefaultMethodTest {
 
         String actual = p.print("abc");
         String expected = "[[[abc]]]";
-        assertThat(actual).isEqualTo(expected);
-    }
-
-    interface MorePrintWord extends PrintWord {
-        @Override
-        default String print(String word) {
-            return "[[[[[" + word + "]]]]]";
-        }
-    }
-
-    @Test
-    public void デフォルトメソッドのオーバーライドの確認() throws Exception {
-        PrintWord p = new MorePrintWord() {};
-        String actual = p.print("abc");
-        String expected = "[[[[[abc]]]]]";
         assertThat(actual).isEqualTo(expected);
     }
 
