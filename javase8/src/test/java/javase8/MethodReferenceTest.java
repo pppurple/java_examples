@@ -107,7 +107,27 @@ public class MethodReferenceTest {
             assertThat(fooRef).isInstanceOf(Foo.class);
         }
 
-        class Bar<T> {
+        class Bar {
+            String name;
+            Bar(String name) {
+                this.name = name;
+            }
+        }
+
+        @Test
+        public void 引数のあるコンストラクタ参照() {
+            // ラムダ式
+            Function<String, Bar> lambda = str -> new Bar(str);
+            Bar barLambda = lambda.apply("Lambda Bar");
+            // コンストラクタ参照
+            Function<String, Bar> ref = Bar::new;
+            Bar barRef = ref.apply("Ref Bar");
+
+            assertThat(barLambda.name).isEqualTo("Lambda Bar");
+            assertThat(barRef.name).isEqualTo("Ref Bar");
+        }
+
+        class Baz<T> {
             T name;
             T getName() {
                 return name;
@@ -120,34 +140,14 @@ public class MethodReferenceTest {
         @Test
         public void ジェネリクスを使用したコンストラクタ参照() throws NoSuchMethodException, NoSuchFieldException {
             // ラムダ式
-            Supplier<Bar<String>> lambda = () -> new Bar<>();
-            Bar<String> barLambda = lambda.get();
+            Supplier<Baz<String>> lambda = () -> new Baz<>();
+            Baz<String> bazLambda = lambda.get();
             // コンストラクタ参照
-            Supplier<Bar<String>> ref = Bar::new;
-            Bar<String> barRef = ref.get();
+            Supplier<Baz<String>> ref = Baz::new;
+            Baz<String> bazRef = ref.get();
 
-            assertThat(barLambda).isInstanceOf(Bar.class);
-            assertThat(barRef).isInstanceOf(Bar.class);
-        }
-
-        class Baz {
-            String name;
-            Baz(String name) {
-                this.name = name;
-            }
-        }
-
-        @Test
-        public void 引数のあるコンストラクタ参照() {
-            // ラムダ式
-            Function<String, Baz> lambda = str -> new Baz(str);
-            Baz bazLambda = lambda.apply("Lambda Baz");
-            // コンストラクタ参照
-            Function<String, Baz> ref = Baz::new;
-            Baz bazRef = ref.apply("Ref Baz");
-
-            assertThat(bazLambda.name).isEqualTo("Lambda Baz");
-            assertThat(bazRef.name).isEqualTo("Ref Baz");
+            assertThat(bazLambda).isInstanceOf(Baz.class);
+            assertThat(bazRef).isInstanceOf(Baz.class);
         }
 
         @Test
