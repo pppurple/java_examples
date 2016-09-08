@@ -4,13 +4,15 @@ import org.junit.Test;
 import org.junit.experimental.runners.Enclosed;
 import org.junit.runner.RunWith;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
+import java.util.*;
 import java.util.function.*;
+import java.util.stream.IntStream;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
+import static org.assertj.core.api.Assertions.assertThat;
+
 
 /**
  * Created by pppurple on 2016/08/12.
@@ -18,44 +20,39 @@ import static org.junit.Assert.*;
 @RunWith(Enclosed.class)
 public class MethodReferenceTest {
     public static class ClassMethodReference {
-        @Test
-        public void メソッド参照() throws Exception {
-            List<String> list = new ArrayList<>();
-            list.add("aaa");
-            list.add("bbb");
-            list.add("ccc");
-            // ラムダ式
-            list.forEach(str -> System.out.println(str));
-            // メソッド参照
-            list.forEach(System.out::println);
-        }
 
-        public static void printWithBrace(String str) {
-            System.out.println("{" + str + "}");
+        public static String printWithBrace(String str) {
+            return "{" + str + "}";
         }
 
         @Test
         public void クラスメソッド参照() throws Exception {
             // ラムダ式
-            Consumer<String> consumer = str -> ClassMethodReference.printWithBrace(str);
-            consumer.accept("abc");
+            UnaryOperator<String> lambda = str -> ClassMethodReference.printWithBrace(str);
+            String lambdaStr = lambda.apply("abc");
             // メソッド参照
-            Consumer<String> consumer2 = ClassMethodReference::printWithBrace;
-            consumer2.accept("abc");
+            UnaryOperator<String> methodRef = ClassMethodReference::printWithBrace;
+            String methodRefStr = methodRef.apply("abc");
+
+            assertThat(lambdaStr).isEqualTo("{abc}");
+            assertThat(methodRefStr).isEqualTo("{abc}");
         }
 
-        public static void printWithBi(String prefix, String suffix) {
-            System.out.println(prefix + ":" + suffix);
+        public static String printWithBi(String prefix, String suffix) {
+            return prefix + ":" + suffix;
         }
 
         @Test
         public void 複数引数のクラスメソッド参照() throws Exception {
             // ラムダ式
-            BiConsumer<String, String> bi = (pre, suf) -> ClassMethodReference.printWithBi(pre, suf);
-            bi.accept("aaa", "bbb");
+            BinaryOperator<String> lambda = (pre, suf) -> ClassMethodReference.printWithBi(pre, suf);
+            String lambdaStr = lambda.apply("aaa", "bbb");
             // メソッド参照
-            BiConsumer<String, String> bi2 = ClassMethodReference::printWithBi;
-            bi2.accept("aaa", "bbb");
+            BinaryOperator<String> methodRef = ClassMethodReference::printWithBi;
+            String methodRefStr = methodRef.apply("aaa", "bbb");
+
+            assertThat(lambdaStr).isEqualTo("aaa:bbb");
+            assertThat(methodRefStr).isEqualTo("aaa:bbb");
         }
     }
 
@@ -63,20 +60,18 @@ public class MethodReferenceTest {
         @Test
         public void インスタンスメソッド参照() throws Exception {
             // ラムダ式
-            List<String> list = new ArrayList<>();
-            Consumer<String> consumer = str -> list.add(str);
-            consumer.accept("abc");
+            Map<Integer, String> map = new HashMap<>();
+            BiFunction<Integer, String, String> lambda = (i, s) -> map.put(i, s);
+            lambda.apply(1, "aaa");
             // インスタンスメソッド参照
-            Consumer<String> consumer2 = list::add;
-            consumer2.accept("def");
+            BiFunction<Integer, String, String> methodRef = map::put;
+            methodRef.apply(2, "bbb");
 
-            String actual = list.get(0);
-            String expected = "abc";
-            assertThat(actual, is(expected));
+            String getLambda = map.get(1);
+            assertThat(getLambda).isEqualTo("aaa");
 
-            String actual2 = list.get(1);
-            String expected2 = "def";
-            assertThat(actual2, is(expected2));
+            String getMethodRef = map.get(2);
+            assertThat(getMethodRef).isEqualTo("bbb");
         }
 
         @Test
@@ -89,54 +84,70 @@ public class MethodReferenceTest {
             String UpperStr2 = func2.apply("abc");
 
             String expected = "ABC";
-            assertThat(UpperStr, is(expected));
-            assertThat(UpperStr2, is(expected));
+            assertThat(UpperStr).isEqualTo(expected);
+            assertThat(UpperStr2).isEqualTo(expected);
         }
     }
 
     public static class ConstructorReference {
-        @Test
-        public void コンストラクタ参照() throws Exception {
-            // ラムダ式
-            Supplier<Random> supplier = () -> new Random();
-            Random rand = supplier.get();
-            // コンストラクタ参照
-            Supplier<Random> supplier2 = Random::new;
-            Random rand2 = supplier2.get();
-
-            rand.setSeed(10L);
-            rand2.setSeed(10L);
-            int actual = rand.nextInt();
-            int actual2 = rand2.nextInt();
-            int expected = -1157793070;
-            assertThat(actual, is(expected));
-            assertThat(actual2, is(expected));
+        class Foo {
+            Foo() {}
         }
 
         @Test
-        public void ジェネリクスを使用したコンストラクタ参照() {
+        public void コンストラクタ参照() throws Exception {
             // ラムダ式
-            Supplier<List<String>> supplier = () -> new ArrayList<>();
-            List<String> list = supplier.get();
+            Supplier<Foo> lambda = () -> new Foo();
+            Foo fooLambda = lambda.get();
             // コンストラクタ参照
-            Supplier<List<String>> supplier2 = ArrayList<String>::new;
-            List<String> list2 = supplier2.get();
+            Supplier<Foo> ref = Foo::new;
+            Foo fooRef = ref.get();
+
+            assertThat(fooLambda).isInstanceOf(Foo.class);
+            assertThat(fooRef).isInstanceOf(Foo.class);
+        }
+
+        class Bar<T> {
+            T name;
+            T getName() {
+                return name;
+            }
+            void setName(T name) {
+                this.name = name;
+            }
+        }
+
+        @Test
+        public void ジェネリクスを使用したコンストラクタ参照() throws NoSuchMethodException, NoSuchFieldException {
+            // ラムダ式
+            Supplier<Bar<String>> lambda = () -> new Bar<>();
+            Bar<String> barLambda = lambda.get();
+            // コンストラクタ参照
+            Supplier<Bar<String>> ref = Bar::new;
+            Bar<String> barRef = ref.get();
+
+            assertThat(barLambda).isInstanceOf(Bar.class);
+            assertThat(barRef).isInstanceOf(Bar.class);
+        }
+
+        class Baz {
+            String name;
+            Baz(String name) {
+                this.name = name;
+            }
         }
 
         @Test
         public void 引数のあるコンストラクタ参照() {
             // ラムダ式
-            Function<Long, Random> func = (seed) -> new Random(seed);
-            Random rand = func.apply(10L);
+            Function<String, Baz> lambda = str -> new Baz(str);
+            Baz bazLambda = lambda.apply("Lambda Baz");
             // コンストラクタ参照
-            Function<Long, Random> func2 = Random::new;
-            Random rand2 = func2.apply(10L);
+            Function<String, Baz> ref = Baz::new;
+            Baz bazRef = ref.apply("Ref Baz");
 
-            int actual = rand.nextInt();
-            int actual2 = rand2.nextInt();
-            int expected = -1157793070;
-            assertThat(actual, is(expected));
-            assertThat(actual2, is(expected));
+            assertThat(bazLambda.name).isEqualTo("Lambda Baz");
+            assertThat(bazRef.name).isEqualTo("Ref Baz");
         }
 
         @Test
@@ -149,8 +160,8 @@ public class MethodReferenceTest {
             String[] arr2 = func2.apply(5);
 
             int length = 5;
-            assertThat(arr.length, is(length));
-            assertThat(arr2.length, is(length));
+            assertThat(arr.length).isEqualTo(length);
+            assertThat(arr2.length).isEqualTo(length);
         }
     }
 }
