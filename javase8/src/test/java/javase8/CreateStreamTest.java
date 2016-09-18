@@ -68,7 +68,7 @@ public class CreateStreamTest {
     }
 
     @Test
-    public void リストからのストリーム処理() {
+    public void リストからのストリーム生成() {
         // Stringのリスト
         List<String> list = Arrays.asList("aaa", "bbb", "ccc");
         Stream<String> StrStream = list.stream();
@@ -89,7 +89,7 @@ public class CreateStreamTest {
     }
 
     @Test
-    public void 配列からのストリーム処理() {
+    public void 配列からのストリーム生成() {
         // Stringの配列
         String[] array = {"aaa", "bbb", "ccc", "eee", "fff"};
         Stream<String> stream = Arrays.stream(array);
@@ -312,6 +312,36 @@ public class CreateStreamTest {
     }
 
     @Test
+    public void charsからのストリーム生成() {
+        // chars
+        String str = "abcde1234あいう";
+        str.chars()
+                .forEach(System.out::println);
+        str.chars()
+                .forEach(c -> System.out.println((char)c));
+
+        int[] charArray = str.chars()
+                .toArray();
+        assertThat(charArray).containsOnly(97, 98, 99, 100, 101,
+                49, 50, 51, 52,
+                12354, 12356, 12358);
+    }
+
+    @Test
+    public void codePointsからのストリーム生成() {
+        // codePoints
+        String emoji = "\uD83D\uDE04";
+        emoji.codePoints()
+                .forEach(System.out::println);
+        emoji.codePoints()
+                .mapToObj(Integer::toHexString)
+                .forEach(System.out::print);
+
+        int[] emojiInt = emoji.codePoints().toArray();
+        assertThat(emojiInt).containsOnly(128516);
+    }
+
+    @Test
     public void Randomからのストリーム生成() {
         // ints
         Random intRandom = new Random(100);
@@ -337,39 +367,10 @@ public class CreateStreamTest {
 
         List<Integer> doubleList = doubleRandom.doubles(5, 1, 1000)
                 .boxed()
-                .mapToInt(d -> d.intValue())
+                .mapToInt(Double::intValue)
                 .boxed()
                 .collect(Collectors.toList());
         assertThat(doubleList).containsOnly(623, 237, 487, 680, 525);
-    }
-
-    @Test
-    public void charsからのストリーム生成() {
-        // chars
-        String str = "abcde1234あいう";
-        str.chars()
-                .forEach(System.out::println);
-        str.chars()
-                .forEach(i -> System.out.println((char)i));
-        str.chars()
-                .forEach(c -> System.out.println((char)c));
-
-        int[] charArray = str.chars()
-                .toArray();
-        assertThat(charArray).containsOnly(97, 98, 99, 100, 101,
-                49, 50, 51, 52,
-                12354, 12356, 12358);
-    }
-
-    @Test
-    public void codePointsからのストリーム生成() {
-        // codePoints
-        String emoji = "\uD83D\uDE04";
-        emoji.codePoints()
-                .forEach(System.out::println);
-
-        int[] emojiInt = emoji.codePoints().toArray();
-        assertThat(emojiInt).containsOnly(128516);
     }
 
     @Test
@@ -453,7 +454,8 @@ public class CreateStreamTest {
                             .map(Path::toString)
                             .collect(Collectors.toList());
             assertThat(list).containsOnly("src\\main\\java\\text\\memo.txt",
-                    "src\\main\\java\\text\\data.scv");
+                    "src\\main\\java\\text\\access.log",
+                    "src\\main\\java\\text\\csv");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -465,15 +467,16 @@ public class CreateStreamTest {
             e.printStackTrace();
         }
 
-        // walk
         try {
             List<String> list =
                     Files.walk(path)
                             .map(Path::toString)
                             .collect(Collectors.toList());
-            assertThat(list).containsOnly("src\\main\\java\\text\\memo.txt",
-                    "src\\main\\java\\text\\data.scv",
-                    "src\\main\\java\\text");
+            assertThat(list).containsOnly("src\\main\\java\\text",
+                    "src\\main\\java\\text\\memo.txt",
+                    "src\\main\\java\\text\\access.log",
+                    "src\\main\\java\\text\\csv",
+                    "src\\main\\java\\text\\csv\\data.csv");
         } catch (IOException e) {
             e.printStackTrace();
         }
