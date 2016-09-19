@@ -6,3 +6,7 @@
 
 # Maven
 target
+
+#other
+*Org.java
+*LambdaTestBook.java
