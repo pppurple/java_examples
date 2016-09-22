@@ -63,17 +63,10 @@ public class StreamApiIntermediateOperationTest {
                 .map(text -> "|" + text + "|")
                 .collect(Collectors.toList());
         assertThat(strList).containsOnly("|aaa|", "|bbb|", "|ccc|");
+    }
 
-        // intからStringへ変換
-        IntStream.rangeClosed(1, 5)
-                .mapToObj(i -> i + "yen")
-                .forEach(System.out::println);
-
-        List<String> intToString = IntStream.rangeClosed(1, 5)
-                .mapToObj(i -> i + "yen")
-                .collect(Collectors.toList());
-        assertThat(intToString).containsOnly("1yen", "2yen", "3yen", "4yen", "5yen");
-
+    @Test
+    public void mapToInt() {
         // Stringからintへ変換
         String[] texts2 = {"aaa", "bbbb", "ccccc"};
         Arrays.stream(texts2)
@@ -88,19 +81,52 @@ public class StreamApiIntermediateOperationTest {
     }
 
     @Test
+    public void mapToObj() {
+        // intからStringへ変換
+        IntStream.rangeClosed(1, 5)
+                .mapToObj(i -> i + "yen")
+                .forEach(System.out::println);
+
+        List<String> intToString = IntStream.rangeClosed(1, 5)
+                .mapToObj(i -> i + "yen")
+                .collect(Collectors.toList());
+        assertThat(intToString).containsOnly("1yen", "2yen", "3yen", "4yen", "5yen");
+    }
+
+    @Test
     public void flatMap() {
-        List<String> csv = Arrays.asList("aaa bbb ccc",
-                "ddd eee fff");
-        csv.stream()
+        List<String> texts = Arrays.asList("aaa bbb ccc", "ddd eee fff");
+        texts.stream()
                 .flatMap(s -> Arrays.stream(s.split(" ")))
                 .map(String::toUpperCase)
                 .forEach(System.out::println);
 
-        List<String> list = csv.stream()
+        List<String> list = texts.stream()
                 .flatMap(s -> Arrays.stream(s.split(" ")))
                 .map(String::toUpperCase)
                 .collect(Collectors.toList());
         assertThat(list).containsOnly("AAA", "BBB", "CCC", "DDD", "EEE", "FFF");
+    }
+
+    @Test
+    public void flatMapToInt() {
+        List<String> texts = Arrays.asList("a bb ccc", "dddd eeeee ffffff");
+        texts.stream()
+                .flatMapToInt(s -> {
+                    String[] str = s.split(" ");
+                    return Arrays.stream(str).mapToInt(String::length);
+                })
+                .boxed()
+                .forEach(System.out::println);
+
+        List<Integer> list = texts.stream()
+                .flatMapToInt(s -> {
+                    String[] str = s.split(" ");
+                    return Arrays.stream(str).mapToInt(String::length);
+                })
+                .boxed()
+                .collect(Collectors.toList());
+        assertThat(list).containsOnly(1, 2, 3, 4, 5, 6);
     }
 
     @Test
@@ -174,6 +200,22 @@ public class StreamApiIntermediateOperationTest {
                 .sorted(Comparator.reverseOrder())
                 .collect(Collectors.toList());
         assertThat(reverseIntList).containsSequence(6, 4, 3, 2, 1);
+    }
+
+    @Test
+    public void unsorted() {
+        // int sort asc
+        IntStream.rangeClosed(1, 10)
+                .map(i -> i * 2)
+                .unordered()
+                .forEach(System.out::println);
+
+        List<Integer> intList = IntStream.of(2, 3, 1, 4, 6)
+                .boxed()
+                .sorted()
+                .collect(Collectors.toList());
+        assertThat(intList).containsSequence(1, 2, 3, 4, 6);
+
     }
 
     @Test
@@ -254,5 +296,18 @@ public class StreamApiIntermediateOperationTest {
                 .boxed()
                 .collect(Collectors.toList());
         assertThat(list).containsOnly(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+    }
+
+    @Test
+    public void asLongStream() {
+        IntStream.rangeClosed(1, 10)
+                .asLongStream()
+                .forEach(System.out::println);
+
+        List<Long> list = IntStream.rangeClosed(1, 10)
+                .asLongStream()
+                .boxed()
+                .collect(Collectors.toList());
+        assertThat(list).containsOnly(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L);
     }
 }
