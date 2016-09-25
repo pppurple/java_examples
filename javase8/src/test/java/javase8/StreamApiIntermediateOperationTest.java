@@ -203,18 +203,17 @@ public class StreamApiIntermediateOperationTest {
     }
 
     @Test
-    public void unsorted() {
-        // int sort asc
-        IntStream.rangeClosed(1, 10)
+    public void unordered() {
+        IntStream.of(3, 2, 5, 6, 1)
                 .map(i -> i * 2)
                 .unordered()
                 .forEach(System.out::println);
 
         List<Integer> intList = IntStream.of(2, 3, 1, 4, 6)
                 .boxed()
-                .sorted()
+                .unordered()
                 .collect(Collectors.toList());
-        assertThat(intList).containsSequence(1, 2, 3, 4, 6);
+        assertThat(intList).contains(1, 2, 3, 4, 6);
 
     }
 
@@ -234,7 +233,7 @@ public class StreamApiIntermediateOperationTest {
         // generate
         Stream.generate(() -> "abc")
                 .limit(5)
-                .forEach(System.out::print);
+                .forEach(System.out::println);
 
         List<String> strList = Stream.generate(() -> "abc")
                 .limit(5)
