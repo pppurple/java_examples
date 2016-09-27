@@ -204,17 +204,19 @@ public class StreamApiIntermediateOperationTest {
 
     @Test
     public void unordered() {
-        IntStream.of(3, 2, 5, 6, 1)
-                .map(i -> i * 2)
+        IntStream.rangeClosed(1, 10)
+                .map(i -> i + 1)
+                .parallel()
                 .unordered()
                 .forEach(System.out::println);
 
-        List<Integer> intList = IntStream.of(2, 3, 1, 4, 6)
-                .boxed()
+        List<Integer> intList = IntStream.rangeClosed(1, 10)
+                .map(i -> i + 1)
+                .parallel()
                 .unordered()
+                .boxed()
                 .collect(Collectors.toList());
-        assertThat(intList).contains(1, 2, 3, 4, 6);
-
+        assertThat(intList).contains(2, 3, 4, 5, 6, 7, 8, 9, 10, 11);
     }
 
     @Test
