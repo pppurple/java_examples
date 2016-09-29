@@ -166,7 +166,7 @@ public class StreamApiIntermediateOperationTest {
         List<String> strList = Stream.of("abc", "abb", "aab", "adb")
                 .sorted()
                 .collect(Collectors.toList());
-        assertThat(strList).containsSequence("aab", "abb", "abc", "adb");
+        assertThat(strList).containsExactly("aab", "abb", "abc", "adb");
 
         // string sort desc
         Stream.of("abc", "abb", "aab", "adb")
@@ -176,7 +176,7 @@ public class StreamApiIntermediateOperationTest {
         List<String> reverseStrList = Stream.of("abc", "abb", "aab", "adb")
                 .sorted(Comparator.reverseOrder())
                 .collect(Collectors.toList());
-        assertThat(reverseStrList).containsSequence("adb", "abc", "abb", "aab");
+        assertThat(reverseStrList).containsExactly("adb", "abc", "abb", "aab");
 
         // int sort asc
         IntStream.of(2, 3, 1, 4, 6)
@@ -187,7 +187,7 @@ public class StreamApiIntermediateOperationTest {
                 .boxed()
                 .sorted()
                 .collect(Collectors.toList());
-        assertThat(intList).containsSequence(1, 2, 3, 4, 6);
+        assertThat(intList).containsExactly(1, 2, 3, 4, 6);
 
         // int sort desc
         IntStream.of(2, 3, 1, 4, 6)
@@ -199,7 +199,7 @@ public class StreamApiIntermediateOperationTest {
                 .boxed()
                 .sorted(Comparator.reverseOrder())
                 .collect(Collectors.toList());
-        assertThat(reverseIntList).containsSequence(6, 4, 3, 2, 1);
+        assertThat(reverseIntList).containsExactly(6, 4, 3, 2, 1);
     }
 
     @Test
@@ -254,7 +254,7 @@ public class StreamApiIntermediateOperationTest {
                 .skip(92)
                 .boxed()
                 .collect(Collectors.toList());
-        assertThat(intList).containsSequence(92, 93, 94, 95, 96, 97, 98, 99, 100);
+        assertThat(intList).containsExactly(92, 93, 94, 95, 96, 97, 98, 99, 100);
 
         // String
         Stream.of("a", "b", "c", "d", "e", "f", "g", "h")
@@ -264,7 +264,7 @@ public class StreamApiIntermediateOperationTest {
         List<String> strList = Stream.of("a", "b", "c", "d", "e", "f", "g", "h")
                 .skip(4)
                 .collect(Collectors.toList());
-        assertThat(strList).containsSequence("e", "f", "g", "h");
+        assertThat(strList).containsExactly("e", "f", "g", "h");
     }
 
     @Test
