@@ -1,5 +1,6 @@
 package javase8;
 
+import org.assertj.core.api.Condition;
 import org.junit.Test;
 
 import java.util.*;
@@ -7,6 +8,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import static org.assertj.core.api.Assertions.anyOf;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
 
@@ -14,21 +16,6 @@ import static org.assertj.core.api.Assertions.entry;
  * Created by pppurple on 2016/08/22.
  */
 public class StreamApiTerminalOperationTest {
-    @Test
-    public void reduce() {
-        int sum = IntStream.rangeClosed(1, 10)
-                .reduce(0, (prv, prs) -> prv + prs);
-        assertThat(sum).isEqualTo(55);
-
-        String text = Stream.of("aaa", "bbb", "ccc")
-                .reduce("", (prv, prs) -> prv + prs);
-        assertThat(text).isEqualTo("aaabbbccc");
-
-        Optional<String> text2 = Stream.of("AAA", "BBB", "CCC")
-                .reduce((prv, prs) -> prv + prs);
-        assertThat(text2.get()).isEqualTo("AAABBBCCC");
-    }
-
     @Test
     public void toList() {
         List<Integer> list = IntStream.rangeClosed(1, 5)
@@ -51,12 +38,12 @@ public class StreamApiTerminalOperationTest {
         assertThat(text).isEqualTo("AAABBBCCC");
 
         String ints = IntStream.rangeClosed(1, 9)
-                .mapToObj(i -> String.valueOf(i))
+                .mapToObj(String::valueOf)
                 .collect(Collectors.joining());
         assertThat(ints).isEqualTo("123456789");
 
         String csv = IntStream.rangeClosed(1, 9)
-                .mapToObj(i -> String.valueOf(i))
+                .mapToObj(String::valueOf)
                 .collect(Collectors.joining(","));
         assertThat(csv).isEqualTo("1,2,3,4,5,6,7,8,9");
     }
@@ -97,7 +84,7 @@ public class StreamApiTerminalOperationTest {
         assertThat(sum).isEqualTo(55);
 
         int lengthSum = Stream.of("a", "bb", "ccc")
-                .collect(Collectors.summingInt(str -> str.length()));
+                .collect(Collectors.summingInt(String::length));
         assertThat(lengthSum).isEqualTo(6);
     }
 
@@ -109,7 +96,7 @@ public class StreamApiTerminalOperationTest {
         assertThat(avg).isEqualTo(5.5);
 
          double lengthAvg = Stream.of("a", "bb", "ccc")
-                .collect(Collectors.averagingInt(str -> str.length()));
+                .collect(Collectors.averagingInt(String::length));
         assertThat(lengthAvg).isEqualTo(2.0);
     }
 
@@ -179,7 +166,7 @@ public class StreamApiTerminalOperationTest {
         Map<String, Long> stringCount =
                 Stream.of("a", "bb", "ccc", "A", "dd", "CCC")
                         .collect(Collectors.groupingBy(String::toUpperCase,
-                                () -> new TreeMap<String, Long>(),
+                                TreeMap::new,
                                 Collectors.counting()));
         assertThat(stringCount).containsOnlyKeys("A", "BB", "CCC", "DD");
         assertThat(stringCount).containsValues(2L, 1L, 2L, 1L);
@@ -213,62 +200,59 @@ public class StreamApiTerminalOperationTest {
     }
 
     @Test
-    public void allMatch() {
-        boolean matchAll = IntStream.rangeClosed(1, 10)
-                .allMatch(i -> i > 8);
-        assertThat(matchAll).isFalse();
+    public void toArray() {
+        int[] ints = IntStream.rangeClosed(1, 5)
+                .toArray();
+        assertThat(ints).containsSequence(1, 2, 3, 4, 5);
+
+        String[] texts = Stream.of("aaa", "bbb", "ccc")
+                .toArray(String[]::new);
+        assertThat(texts).containsSequence("aaa", "bbb", "ccc");
     }
 
     @Test
-    public void anyMatch() {
-        boolean matchAny = IntStream.rangeClosed(1, 10)
-                .anyMatch(i -> i > 8);
-        assertThat(matchAny).isTrue();
+    public void reduce() {
+        // reduce(BinaryOperator<T> accumulator)
+        OptionalInt sum = IntStream.rangeClosed(1, 10)
+                .reduce((a, b) -> a + b);
+        assertThat(sum.getAsInt()).isEqualTo(55);
+
+        Optional<String> text = Stream.of("aaa", "bbb", "ccc")
+                .reduce((a, b) -> a + b);
+        assertThat(text.get()).isEqualTo("aaabbbccc");
     }
 
     @Test
-    public void noneMatch() {
-        boolean matchNone = IntStream.rangeClosed(1, 10)
-                .noneMatch(i -> i > 10);
-        assertThat(matchNone).isTrue();
+    public void reduceWithIdentity() {
+        // reduce(T identity, BinaryOperator<T> accumulator)
+        int sum = IntStream.rangeClosed(1, 10)
+                .reduce(1, (a, b) -> a + b);
+        assertThat(sum).isEqualTo(56);
+
+        String text = Stream.of("aaa", "bbb", "ccc")
+                .reduce("#", (a, b) -> a + b);
+        assertThat(text).isEqualTo("#aaabbbccc");
     }
 
     @Test
-    public void findFirst() {
-        Optional<String> first = Stream.of("a", "aa", "aaa")
-                .filter(s -> s.length() > 2)
-                .findFirst();
-        assertThat(first.get()).isEqualTo("aaa");
-    }
+    public void reduceWithAccumulator() {
+        // reduce(U identity, BiFunction<U,? super T,U> accumulator, BinaryOperator<U> combiner)
+        Map<Integer, String> map = Stream.of("a", "bb", "ccc", "dd")
+                .reduce(new HashMap<>(),
+                        (m, s) -> {
+                            m.put(s.length(), s);
+                            return m;
+                        },
+                        (m1, m2) -> {
+                            m1.putAll(m2);
+                            return m1;
+                        });
 
-    @Test
-    public void findAny() {
-        Optional<String> any = Stream.of("a", "aa", "aaa")
-                .filter(s -> s.length() > 2)
-                .findAny();
-        assertThat(any.get()).isEqualTo("aaa");
-    }
+        map.keySet().forEach(k -> System.out.println(k + ":" + map.get(k)));
 
-    @Test
-    public void min() {
-        OptionalInt min = IntStream.of(3, 5, 2, 8, 4)
-                .min();
-        assertThat(min.getAsInt()).isEqualTo(2);
-
-        Optional<String> minText = Stream.of("aaa", "bbb", "ccc")
-                .min(Comparator.naturalOrder());
-        assertThat(minText.get()).isEqualTo("aaa");
-    }
-
-    @Test
-    public void max() {
-        OptionalInt max = IntStream.of(3, 5, 2, 8, 4)
-                .max();
-        assertThat(max.getAsInt()).isEqualTo(8);
-
-        Optional<String> maxText = Stream.of("aaa", "bbb", "ccc")
-                .max(Comparator.naturalOrder());
-        assertThat(maxText.get()).isEqualTo("ccc");
+        assertThat(map).containsOnly(entry(1, "a"),
+                entry(2, "dd"),
+                entry(3, "ccc"));
     }
 
     @Test
@@ -280,14 +264,29 @@ public class StreamApiTerminalOperationTest {
     }
 
     @Test
-    public void toArray() {
-        int[] ints = IntStream.rangeClosed(1, 5)
-                .toArray();
-        assertThat(ints).containsSequence(1, 2, 3, 4, 5);
+    public void min() {
+        // int
+        OptionalInt min = IntStream.of(3, 5, 2, 8, 4)
+                .min();
+        assertThat(min.getAsInt()).isEqualTo(2);
 
-        String[] texts = Stream.of("aaa", "bbb", "ccc")
-                .toArray(String[]::new);
-        assertThat(texts).containsSequence("aaa", "bbb", "ccc");
+        // String
+        Optional<String> minText = Stream.of("aaa", "bbb", "ccc")
+                .min(Comparator.naturalOrder());
+        assertThat(minText.get()).isEqualTo("aaa");
+    }
+
+    @Test
+    public void max() {
+        // min
+        OptionalInt max = IntStream.of(3, 5, 2, 8, 4)
+                .max();
+        assertThat(max.getAsInt()).isEqualTo(8);
+
+        // String
+        Optional<String> maxText = Stream.of("aaa", "bbb", "ccc")
+                .max(Comparator.naturalOrder());
+        assertThat(maxText.get()).isEqualTo("ccc");
     }
 
     @Test
@@ -302,5 +301,57 @@ public class StreamApiTerminalOperationTest {
         OptionalDouble avg = IntStream.rangeClosed(1, 10)
                 .average();
         assertThat(avg.getAsDouble()).isEqualTo(5.5);
+    }
+
+    @Test
+    public void findFirst() {
+        Optional<String> first = Stream.of("a", "aa", "aaa")
+                .filter(s -> s.length() > 1)
+                .findFirst();
+        assertThat(first.get()).isEqualTo("aa");
+    }
+
+    static List<String> aList = Arrays.asList("aa", "aaa");
+    Condition<String> aCondtion = new Condition<String>(aList::contains, "a match");
+
+    @Test
+    public void findAny() {
+        Optional<String> any = Stream.of("a", "aa", "aaa")
+                .filter(s -> s.length() > 1)
+                .findAny();
+        assertThat(any.get()).is(aCondtion);
+    }
+
+    @Test
+    public void anyMatch() {
+        boolean matchAny = IntStream.rangeClosed(1, 10)
+                .anyMatch(i -> i > 8);
+        assertThat(matchAny).isTrue();
+
+        boolean matchAny2 = IntStream.rangeClosed(1, 10)
+                .anyMatch(i -> i > 10);
+        assertThat(matchAny2).isFalse();
+    }
+
+    @Test
+    public void allMatch() {
+        boolean matchAll = IntStream.rangeClosed(1, 10)
+                .allMatch(i -> i > 0);
+        assertThat(matchAll).isTrue();
+
+        boolean matchAll2 = IntStream.rangeClosed(1, 10)
+                .allMatch(i -> i > 8);
+        assertThat(matchAll2).isFalse();
+    }
+
+    @Test
+    public void noneMatch() {
+        boolean matchNone = IntStream.rangeClosed(1, 10)
+                .noneMatch(i -> i > 10);
+        assertThat(matchNone).isTrue();
+
+        boolean matchNone2 = IntStream.rangeClosed(1, 10)
+                .noneMatch(i -> i > 8);
+        assertThat(matchNone2).isFalse();
     }
 }
