@@ -246,10 +246,12 @@ public class StreamApiTerminalOperationTest {
         int min = stat.getMin();
         double sum = stat.getSum();
         double avg = stat.getAverage();
+        long count = stat.getCount();
         assertThat(max).isEqualTo(10);
         assertThat(min).isEqualTo(1);
         assertThat(sum).isEqualTo(55);
         assertThat(avg).isEqualTo(5.5);
+        assertThat(count).isEqualTo(10);
     }
 
     @Test
@@ -263,11 +265,22 @@ public class StreamApiTerminalOperationTest {
                 .mapToObj(String::valueOf)
                 .collect(Collectors.joining());
         assertThat(ints).isEqualTo("123456789");
+    }
 
+    @Test
+    public void joiningWithDelimiter() {
         String csv = IntStream.rangeClosed(1, 9)
                 .mapToObj(String::valueOf)
                 .collect(Collectors.joining(","));
         assertThat(csv).isEqualTo("1,2,3,4,5,6,7,8,9");
+    }
+
+    @Test
+    public void joiningWithPrefixAndSuffix() {
+        String csv = IntStream.rangeClosed(1, 9)
+                .mapToObj(String::valueOf)
+                .collect(Collectors.joining(",", "[", "]"));
+        assertThat(csv).isEqualTo("[1,2,3,4,5,6,7,8,9]");
     }
 
     @Test
