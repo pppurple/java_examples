@@ -12,9 +12,6 @@ import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 
-/**
- * Created by pppurple on 2016/10/01.
- */
 public class ServerThreadLocal implements Runnable {
     // GitHub用にDOCUMENT_ROOTを変更しているので、ローカルで動かす場合はこちらに変える。
     private static final String DOCUMENT_ROOT  = "src/main/java/getserver";

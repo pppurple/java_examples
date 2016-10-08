@@ -5,9 +5,6 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-/**
- * Created by pppurple on 2016/10/01.
- */
 public class SendResponse {
     static void sendOkResponse(OutputStream output, InputStream fis, String ext) throws Exception {
 

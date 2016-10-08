@@ -7,9 +7,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
-/**
- * Created by pppurple on 2016/10/02.
- */
 public class PostBBS extends HttpServlet {
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response)

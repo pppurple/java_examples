@@ -4,9 +4,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by pppurple on 2016/10/02.
- */
 public class Message {
     public static List<Message> messageList = new ArrayList<Message>();
 

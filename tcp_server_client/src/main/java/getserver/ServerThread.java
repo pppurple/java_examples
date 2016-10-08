@@ -12,9 +12,6 @@ import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 
-/**
- * Created by pppurple on 2016/10/01.
- */
 public class ServerThread implements Runnable {
     private static final String DOCUMENT_ROOT = "C:/Users/kota/Desktop/git_kraken/java_examples/tcp_server_client/src/main/java/getserver";
     private static final String ERROR_DOCUMENT = "src/main/java/getserver/error";

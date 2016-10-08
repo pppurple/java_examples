@@ -7,9 +7,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Locale;
 
-/**
- * Created by pppurple on 2016/10/01.
- */
 public class Util {
     static String readLine(InputStream input) throws Exception {
         int ch;

@@ -3,9 +3,6 @@ package getserver;
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 
-/**
- * Created by pppurple on 2016/10/01.
- */
 public class URLDecoder {
     private static int hex2int(byte b1, byte b2) {
         int digit;
