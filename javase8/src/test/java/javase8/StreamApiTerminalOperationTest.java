@@ -3,19 +3,14 @@ package javase8;
 import org.assertj.core.api.Condition;
 import org.junit.Test;
 
-import java.io.InputStream;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import static org.assertj.core.api.Assertions.anyOf;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
 
-/**
- * Created by pppurple on 2016/08/22.
- */
 public class StreamApiTerminalOperationTest {
     @Test
     public void count() {
@@ -142,7 +137,7 @@ public class StreamApiTerminalOperationTest {
     }
 
     @Test
-    public void reduceWithAccumulator() {
+    public void reduceWithCombiner() {
         // reduce(U identity, BiFunction<U,? super T,U> accumulator, BinaryOperator<U> combiner)
         Map<Integer, String> map = Stream.of("a", "bb", "ccc", "dd")
                 .reduce(new HashMap<>(),
@@ -285,31 +280,49 @@ public class StreamApiTerminalOperationTest {
 
     @Test
     public void mapping() {
+        // Collectors.mapping
+        List<String> upperTextMapping = Stream.of("aaa", "bbb", "ccc")
+                .collect(Collectors.mapping(String::toUpperCase,
+                        Collectors.toList()));
+        assertThat(upperTextMapping).containsSequence("AAA", "BBB", "CCC");
+
+        // map()
         List<String> upperText = Stream.of("aaa", "bbb", "ccc")
                 .map(String::toUpperCase)
                 .collect(Collectors.toList());
         assertThat(upperText).containsSequence("AAA", "BBB", "CCC");
+    }
 
-        List<String> upperTextMapping = Stream.of("aaa", "bbb", "ccc")
-                .collect(Collectors.mapping(String::toUpperCase,
-                        Collectors.toList()));
-        assertThat(upperText).containsSequence("AAA", "BBB", "CCC");
+    @Test
+    public void reducingWithIdentity() {
+        // Collectors.reducing(T identity, BinaryOperator<T> op)
+        int sumReducing = IntStream.rangeClosed(1, 10)
+                .boxed()
+                .collect(Collectors.reducing(1, (sum, i) -> sum + i));
+        assertThat(sumReducing).isEqualTo(56);
+
+        String text = Stream.of("aaa", "bbb", "ccc")
+                .collect(Collectors.reducing("#", (a, b) -> a + b));
+        assertThat(text).isEqualTo("#aaabbbccc");
     }
 
     @Test
     public void reducing() {
-        int sumReduce = IntStream.rangeClosed(1, 10)
-                .reduce(0, (prv, prs) -> prv + prs);
-        assertThat(sumReduce).isEqualTo(55);
+        // Collectors.reducing(BinaryOperator<T> op)
+        Optional<String> text = Stream.of("aaa", "bbb", "ccc")
+                .collect(Collectors.reducing((a, b) -> a + b));
+        assertThat(text.get()).isEqualTo("aaabbbccc");
+    }
 
-        int sumReducing = IntStream.rangeClosed(1, 10)
-                .boxed()
-                .collect(Collectors.reducing(0, (sum, i) -> sum + i));
-        assertThat(sumReducing).isEqualTo(55);
+    @Test
+    public void reducingWithMapper() {
+        // Collectors.reducing(U identity, Function<? super T,? extends U> mapper, BinaryOperator<U> op)
+        int sumLength = Stream.of("a", "bb", "ccc", "dd")
+                .collect(Collectors.reducing(100,
+                        String::length,
+                        (a, b) -> a + b));
 
-        String text = Stream.of("aaa", "bbb", "ccc")
-                .collect(Collectors.reducing("", (prv, prs) -> prv + prs));
-        assertThat(text).isEqualTo("aaabbbccc");
+        assertThat(sumLength).isEqualTo(108);
     }
 
     @Test
@@ -324,13 +337,19 @@ public class StreamApiTerminalOperationTest {
         assertThat(lengthMap).containsOnly(entry(1, Arrays.asList("a", "d")),
                 entry(2, Arrays.asList("bb", "ee")),
                 entry(3, Arrays.asList("ccc", "fff")));
+    }
 
+    @Test
+    public void groupingByDownstream() {
         Map<Integer, Long> countLength =
                 Stream.of("a", "bb", "ccc", "d", "ee", "fff")
                         .collect(Collectors.groupingBy(String::length,
                                 Collectors.counting()));
         assertThat(countLength).containsOnly(entry(1, 2L), entry(2, 2L), entry(3, 2L));
+    }
 
+    @Test
+    public void groupingByMapFactroy() {
         Map<String, Long> stringCount =
                 Stream.of("a", "bb", "ccc", "A", "dd", "CCC")
                         .collect(Collectors.groupingBy(String::toUpperCase,
@@ -347,6 +366,16 @@ public class StreamApiTerminalOperationTest {
                         .collect(Collectors.partitioningBy(s -> s.length() > 2));
         assertThat(length3).contains(entry(true, Arrays.asList("ccc", "fff")));
         assertThat(length3).contains(entry(false, Arrays.asList("a", "bb", "d", "ee")));
+    }
+
+    @Test
+    public void partitioningByWithDownstream() {
+        Map<Boolean, Long> length3 =
+                Stream.of("a", "bb", "ccc", "d", "ee", "fff")
+                        .collect(Collectors.partitioningBy(s -> s.length() > 2,
+                                Collectors.counting()));
+        assertThat(length3).contains(entry(true, 2L));
+        assertThat(length3).contains(entry(false, 4L));
     }
 
     @Test
@@ -372,6 +401,34 @@ public class StreamApiTerminalOperationTest {
         assertThat(upper).contains(entry("a", "A"));
         assertThat(upper).contains(entry("bb", "BB"));
         assertThat(upper).contains(entry("ccc", "CCC"));
+        assertThat(upper).contains(entry("d", "D"));
+        assertThat(upper).contains(entry("ee", "EE"));
+        assertThat(upper).contains(entry("fff", "FFF"));
+    }
+
+    @Test
+    public void toMapWithMerge() {
+        Map<Integer, String> upper =
+                Stream.of("a", "bb", "ccc", "d", "ee", "fff")
+                        .collect(Collectors.toMap(String::length,
+                                s -> s,
+                                (s1, s2) -> s1 + "," + s2));
+        assertThat(upper).contains(entry(1, "a,d"));
+        assertThat(upper).contains(entry(2, "bb,ee"));
+        assertThat(upper).contains(entry(3, "ccc,fff"));
+    }
+
+    @Test
+    public void toMapWithMapSupplier() {
+        Map<Integer, String> upper =
+                Stream.of("a", "bb", "ccc", "d", "ee", "fff")
+                        .collect(Collectors.toMap(String::length,
+                                s -> s,
+                                (s1, s2) -> s1 + "," + s2,
+                                HashMap::new));
+        assertThat(upper).contains(entry(1, "a,d"));
+        assertThat(upper).contains(entry(2, "bb,ee"));
+        assertThat(upper).contains(entry(3, "ccc,fff"));
     }
 
     @Test
