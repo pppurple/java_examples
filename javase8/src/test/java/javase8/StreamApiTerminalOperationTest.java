@@ -35,7 +35,7 @@ public class StreamApiTerminalOperationTest {
 
     @Test
     public void max() {
-        // min
+        // int
         OptionalInt max = IntStream.of(3, 5, 2, 8, 4)
                 .max();
         assertThat(max.getAsInt()).isEqualTo(8);
@@ -113,18 +113,6 @@ public class StreamApiTerminalOperationTest {
     }
 
     @Test
-    public void reduce() {
-        // reduce(BinaryOperator<T> accumulator)
-        OptionalInt sum = IntStream.rangeClosed(1, 10)
-                .reduce((a, b) -> a + b);
-        assertThat(sum.getAsInt()).isEqualTo(55);
-
-        Optional<String> text = Stream.of("aaa", "bbb", "ccc")
-                .reduce((a, b) -> a + b);
-        assertThat(text.get()).isEqualTo("aaabbbccc");
-    }
-
-    @Test
     public void reduceWithIdentity() {
         // reduce(T identity, BinaryOperator<T> accumulator)
         int sum = IntStream.rangeClosed(1, 10)
@@ -134,6 +122,18 @@ public class StreamApiTerminalOperationTest {
         String text = Stream.of("aaa", "bbb", "ccc")
                 .reduce("#", (a, b) -> a + b);
         assertThat(text).isEqualTo("#aaabbbccc");
+    }
+
+    @Test
+    public void reduce() {
+        // reduce(BinaryOperator<T> accumulator)
+        OptionalInt sum = IntStream.rangeClosed(1, 10)
+                .reduce((a, b) -> a + b);
+        assertThat(sum.getAsInt()).isEqualTo(55);
+
+        Optional<String> text = Stream.of("aaa", "bbb", "ccc")
+                .reduce((a, b) -> a + b);
+        assertThat(text.get()).isEqualTo("aaabbbccc");
     }
 
     @Test
@@ -251,11 +251,13 @@ public class StreamApiTerminalOperationTest {
 
     @Test
     public void joining() {
+        // String
         String text = Stream.of("aaa", "bbb", "ccc")
                 .map(String::toUpperCase)
                 .collect(Collectors.joining());
         assertThat(text).isEqualTo("AAABBBCCC");
 
+        // int
         String ints = IntStream.rangeClosed(1, 9)
                 .mapToObj(String::valueOf)
                 .collect(Collectors.joining());
@@ -327,6 +329,7 @@ public class StreamApiTerminalOperationTest {
 
     @Test
     public void groupingBy() {
+        // Collectors.groupingBy(Function<? super T,? extends K> classifier)
         Map<Integer, List<String>> lengthMap =
                 Stream.of("a", "bb", "ccc", "d", "ee", "fff")
                         .collect(Collectors.groupingBy(String::length));
@@ -340,7 +343,9 @@ public class StreamApiTerminalOperationTest {
     }
 
     @Test
-    public void groupingByDownstream() {
+    public void groupingByWithDownstream() {
+        // Collectors.groupingBy(Function<? super T,? extends K> classifier,
+        //                       Collector<? super T,A,D> downstream)
         Map<Integer, Long> countLength =
                 Stream.of("a", "bb", "ccc", "d", "ee", "fff")
                         .collect(Collectors.groupingBy(String::length,
@@ -349,7 +354,10 @@ public class StreamApiTerminalOperationTest {
     }
 
     @Test
-    public void groupingByMapFactroy() {
+    public void groupingByWithMapFactory() {
+        // Collectors.groupingBy(Function<? super T,? extends K> classifier,
+        //                       Supplier<M> mapFactory,
+        //                       Collector<? super T,A,D> downstream)
         Map<String, Long> stringCount =
                 Stream.of("a", "bb", "ccc", "A", "dd", "CCC")
                         .collect(Collectors.groupingBy(String::toUpperCase,
@@ -380,12 +388,14 @@ public class StreamApiTerminalOperationTest {
 
     @Test
     public void toList() {
+        // int
         List<Integer> list = IntStream.rangeClosed(1, 5)
                 .map(i -> i + 100)
                 .boxed()
                 .collect(Collectors.toList());
         assertThat(list).containsSequence(101, 102, 103, 104, 105);
 
+        // String
         List<String> text = Stream.of("aaa", "bbb", "ccc")
                 .map(String::toUpperCase)
                 .collect(Collectors.toList());
@@ -394,6 +404,8 @@ public class StreamApiTerminalOperationTest {
 
     @Test
     public void toMap() {
+        // Collectors.toMap(Function<? super T,? extends K> keyMapper,
+        //                  Function<? super T,? extends U> valueMapper)
         Map<String, String> upper =
                 Stream.of("a", "bb", "ccc", "d", "ee", "fff")
                         .collect(Collectors.toMap(s -> s,
@@ -408,6 +420,9 @@ public class StreamApiTerminalOperationTest {
 
     @Test
     public void toMapWithMerge() {
+        // Collectors.toMap(Function<? super T,? extends K> keyMapper,
+        //                  Function<? super T,? extends U> valueMapper,
+        //                  BinaryOperator<U> mergeFunction)
         Map<Integer, String> upper =
                 Stream.of("a", "bb", "ccc", "d", "ee", "fff")
                         .collect(Collectors.toMap(String::length,
@@ -420,6 +435,10 @@ public class StreamApiTerminalOperationTest {
 
     @Test
     public void toMapWithMapSupplier() {
+        // Collectors.toMap(Function<? super T,? extends K> keyMapper,
+        //                  Function<? super T,? extends U> valueMapper,
+        //                  BinaryOperator<U> mergeFunction,
+        //                  Supplier<M> mapSupplier)
         Map<Integer, String> upper =
                 Stream.of("a", "bb", "ccc", "d", "ee", "fff")
                         .collect(Collectors.toMap(String::length,
