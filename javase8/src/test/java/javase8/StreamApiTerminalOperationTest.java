@@ -69,7 +69,7 @@ public class StreamApiTerminalOperationTest {
     }
 
     static List<String> aList = Arrays.asList("aa", "aaa");
-    Condition<String> aCondtion = new Condition<String>(aList::contains, "a match");
+    Condition<String> aCondtion = new Condition<>(aList::contains, "a match");
 
     @Test
     public void findAny() {
