@@ -3,7 +3,20 @@ package javase8;
 import org.assertj.core.api.Condition;
 import org.junit.Test;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.IntSummaryStatistics;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.OptionalDouble;
+import java.util.OptionalInt;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -367,6 +380,45 @@ public class StreamApiTerminalOperationTest {
         assertThat(stringCount).containsValues(2L, 1L, 2L, 1L);
     }
 
+    // FIXME: 2016/10/14
+    @Test
+    public void groupingByConcurrent() {
+        // groupingByConcurrent(Function<? super T,? extends K> classifier,
+        //                      Collector<? super T,A,D> downstream)
+        ConcurrentMap<Integer, List<String>> lengthMap =
+                Stream.of("a", "bb", "ccc", "d", "ee", "fff")
+                        .collect(Collectors.groupingByConcurrent(String::length));
+        assertThat(lengthMap).containsOnlyKeys(1, 2, 3);
+        assertThat(lengthMap).contains(entry(1, Arrays.asList("a", "d")));
+        assertThat(lengthMap).contains(entry(2, Arrays.asList("bb", "ee")));
+        assertThat(lengthMap).contains(entry(3, Arrays.asList("ccc", "fff")));
+        assertThat(lengthMap).containsOnly(entry(1, Arrays.asList("a", "d")),
+                entry(2, Arrays.asList("bb", "ee")),
+                entry(3, Arrays.asList("ccc", "fff")));
+    }
+
+    // FIXME: 2016/10/14
+    @Test
+    public void groupingByConcurrentWithDownstream() {
+        ConcurrentMap<Integer, Long> countLength =
+                Stream.of("a", "bb", "ccc", "d", "ee", "fff")
+                        .collect(Collectors.groupingByConcurrent(String::length,
+                                Collectors.counting()));
+        assertThat(countLength).containsOnly(entry(1, 2L), entry(2, 2L), entry(3, 2L));
+    }
+
+    // // FIXME: 2016/10/14
+    @Test
+    public void groupingByConcurrentWithMapFactory() {
+        ConcurrentMap<String, Long> stringCount =
+                Stream.of("a", "bb", "ccc", "A", "dd", "CCC")
+                        .collect(Collectors.groupingByConcurrent(String::toUpperCase,
+                                ConcurrentSkipListMap::new,
+                                Collectors.counting()));
+        assertThat(stringCount).containsOnlyKeys("A", "BB", "CCC", "DD");
+        assertThat(stringCount).containsValues(2L, 1L, 2L, 1L);
+    }
+
     @Test
     public void partitioningBy() {
         Map<Boolean, List<String>> length3 =
@@ -386,6 +438,21 @@ public class StreamApiTerminalOperationTest {
         assertThat(length3).contains(entry(false, 4L));
     }
 
+    // FIXME: 2016/10/14 
+    @Test
+    public void collectingAndThen() {
+        List<String> list = Stream.of("a", "b", "c", "d", "e")
+                .map(String::toUpperCase)
+                .collect(Collectors.collectingAndThen(Collectors.toList(), Collections::unmodifiableList));
+        assertThat(list).containsOnly("A", "B", "C", "D", "E");
+    }
+
+    // FIXME: 2016/10/14 
+    @Test
+    public void toCollection() {
+        
+    }
+    
     @Test
     public void toList() {
         // int
@@ -448,6 +515,24 @@ public class StreamApiTerminalOperationTest {
         assertThat(upper).contains(entry(1, "a,d"));
         assertThat(upper).contains(entry(2, "bb,ee"));
         assertThat(upper).contains(entry(3, "ccc,fff"));
+    }
+
+    // FIXME: 2016/10/14 
+    @Test
+    public void toConcurrentMap() {
+        
+    }
+
+    // FIXME: 2016/10/14
+    @Test
+    public void toConcurrentMapWithMerge() {
+
+    }
+
+    // FIXME: 2016/10/14
+    @Test
+    public void toConcurrentMapWithMapSupplier() {
+
     }
 
     @Test

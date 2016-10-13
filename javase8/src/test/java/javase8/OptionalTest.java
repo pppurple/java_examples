@@ -11,9 +11,6 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-/**
- * Created by pppurple on 2016/08/24.
- */
 public class OptionalTest {
     @Test
     public void get() {
