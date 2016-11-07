@@ -13,13 +13,17 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.OptionalDouble;
 import java.util.OptionalInt;
+import java.util.PrimitiveIterator;
 import java.util.Set;
+import java.util.Spliterator;
+import java.util.Spliterators;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
@@ -71,6 +75,18 @@ public class StreamApiTerminalOperationTest {
         OptionalDouble avg = IntStream.rangeClosed(1, 10)
                 .average();
         assertThat(avg.getAsDouble()).isEqualTo(5.5);
+    }
+
+    // FIXME: 2016/11/02
+    @Test
+    public void summaryStatistics() {
+        IntSummaryStatistics summary = IntStream.rangeClosed(1, 10)
+                .summaryStatistics();
+        assertThat(summary.getMax()).isEqualTo(10);
+        assertThat(summary.getMin()).isEqualTo(1);
+        assertThat(summary.getAverage()).isEqualTo(5.5);
+        assertThat(summary.getCount()).isEqualTo(10);
+        assertThat(summary.getSum()).isEqualTo(55);
     }
 
     @Test
@@ -179,6 +195,62 @@ public class StreamApiTerminalOperationTest {
         String[] texts = Stream.of("aaa", "bbb", "ccc")
                 .toArray(String[]::new);
         assertThat(texts).containsSequence("aaa", "bbb", "ccc");
+    }
+
+    // FIXME: 2016/11/02
+    @Test
+    public void iterator() {
+        PrimitiveIterator.OfInt ite = IntStream.rangeClosed(1, 10)
+                .iterator();
+
+        while (ite.hasNext()) {
+            System.out.println(ite.next());
+        }
+    }
+
+    // FIXME: 2016/11/02
+    @Test
+    public void spliterator() {
+        Spliterator.OfInt spliterator = IntStream.of(3, 5, 2, 8, 4, 10, 6, 2, 8)
+                .spliterator();
+
+        assertThat(spliterator.hasCharacteristics(Spliterator.SORTED)).isFalse();
+
+        Spliterator.OfInt orderdSpliterator = IntStream.of(3, 5, 2, 8, 4, 10, 6, 2, 8)
+                .sorted()
+                .spliterator();
+
+        assertThat(orderdSpliterator.hasCharacteristics(Spliterator.SORTED)).isTrue();
+
+        IntStream intStream = StreamSupport.intStream(spliterator, false);
+        List<Integer> list = intStream.distinct()
+                .sorted()
+                .boxed()
+                .collect(Collectors.toList());
+
+        List<Integer> expected = Arrays.asList(2, 3, 4, 5, 6, 8, 10);
+        assertThat(list).isEqualTo(expected);
+    }
+
+    // FIXME: 2016/11/02
+    @Test
+    public void forEach() {
+        IntStream.rangeClosed(1, 10)
+                .forEach(System.out::println);
+    }
+
+    // FIXME: 2016/11/02
+    @Test
+    public void forEachOrdered() {
+        // forEach
+        IntStream.rangeClosed(1, 10)
+                .parallel()
+                .forEach(System.out::println);
+
+        // forEachOrdered
+        IntStream.rangeClosed(1, 10)
+                .parallel()
+                .forEachOrdered(System.out::println);
     }
 
     @Test
