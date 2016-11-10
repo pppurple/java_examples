@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.IntSummaryStatistics;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -16,8 +17,8 @@ import java.util.OptionalInt;
 import java.util.PrimitiveIterator;
 import java.util.Set;
 import java.util.Spliterator;
-import java.util.Spliterators;
 import java.util.TreeMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.stream.Collectors;
@@ -77,7 +78,6 @@ public class StreamApiTerminalOperationTest {
         assertThat(avg.getAsDouble()).isEqualTo(5.5);
     }
 
-    // FIXME: 2016/11/02
     @Test
     public void summaryStatistics() {
         IntSummaryStatistics summary = IntStream.rangeClosed(1, 10)
@@ -197,7 +197,6 @@ public class StreamApiTerminalOperationTest {
         assertThat(texts).containsSequence("aaa", "bbb", "ccc");
     }
 
-    // FIXME: 2016/11/02
     @Test
     public void iterator() {
         PrimitiveIterator.OfInt ite = IntStream.rangeClosed(1, 10)
@@ -208,7 +207,6 @@ public class StreamApiTerminalOperationTest {
         }
     }
 
-    // FIXME: 2016/11/02
     @Test
     public void spliterator() {
         Spliterator.OfInt spliterator = IntStream.of(3, 5, 2, 8, 4, 10, 6, 2, 8)
@@ -232,14 +230,12 @@ public class StreamApiTerminalOperationTest {
         assertThat(list).isEqualTo(expected);
     }
 
-    // FIXME: 2016/11/02
     @Test
     public void forEach() {
         IntStream.rangeClosed(1, 10)
                 .forEach(System.out::println);
     }
 
-    // FIXME: 2016/11/02
     @Test
     public void forEachOrdered() {
         // forEach
@@ -452,7 +448,6 @@ public class StreamApiTerminalOperationTest {
         assertThat(stringCount).containsValues(2L, 1L, 2L, 1L);
     }
 
-    // FIXME: 2016/10/14
     @Test
     public void groupingByConcurrent() {
         // groupingByConcurrent(Function<? super T,? extends K> classifier,
@@ -469,7 +464,6 @@ public class StreamApiTerminalOperationTest {
                 entry(3, Arrays.asList("ccc", "fff")));
     }
 
-    // FIXME: 2016/10/14
     @Test
     public void groupingByConcurrentWithDownstream() {
         ConcurrentMap<Integer, Long> countLength =
@@ -479,7 +473,6 @@ public class StreamApiTerminalOperationTest {
         assertThat(countLength).containsOnly(entry(1, 2L), entry(2, 2L), entry(3, 2L));
     }
 
-    // // FIXME: 2016/10/14
     @Test
     public void groupingByConcurrentWithMapFactory() {
         ConcurrentMap<String, Long> stringCount =
@@ -510,7 +503,6 @@ public class StreamApiTerminalOperationTest {
         assertThat(length3).contains(entry(false, 4L));
     }
 
-    // FIXME: 2016/10/14 
     @Test
     public void collectingAndThen() {
         List<String> list = Stream.of("a", "b", "c", "d", "e")
@@ -519,10 +511,12 @@ public class StreamApiTerminalOperationTest {
         assertThat(list).containsOnly("A", "B", "C", "D", "E");
     }
 
-    // FIXME: 2016/10/14 
     @Test
     public void toCollection() {
-        
+        List<Integer> list = IntStream.rangeClosed(1, 5)
+                .boxed()
+                .collect(Collectors.toCollection(LinkedList::new));
+        assertThat(list).containsOnly(1, 2, 3, 4, 5);
     }
     
     @Test
@@ -589,22 +583,52 @@ public class StreamApiTerminalOperationTest {
         assertThat(upper).contains(entry(3, "ccc,fff"));
     }
 
-    // FIXME: 2016/10/14 
     @Test
     public void toConcurrentMap() {
-        
+        // Collectors.toConcurrentMap(Function<? super T,? extends K> keyMapper,
+        //                            Function<? super T,? extends U> valueMapper)
+        ConcurrentMap<String, String> upper =
+                Stream.of("a", "bb", "ccc", "d", "ee", "fff")
+                        .collect(Collectors.toConcurrentMap(s -> s,
+                                String::toUpperCase));
+        assertThat(upper).contains(entry("a", "A"));
+        assertThat(upper).contains(entry("bb", "BB"));
+        assertThat(upper).contains(entry("ccc", "CCC"));
+        assertThat(upper).contains(entry("d", "D"));
+        assertThat(upper).contains(entry("ee", "EE"));
+        assertThat(upper).contains(entry("fff", "FFF"));
     }
 
-    // FIXME: 2016/10/14
     @Test
     public void toConcurrentMapWithMerge() {
-
+        // Collectors.toConcurrentMap(Function<? super T,? extends K> keyMapper,
+        //                            Function<? super T,? extends U> valueMapper,
+        //                            BinaryOperator<U> mergeFunction)
+        ConcurrentMap<Integer, String> upper =
+                Stream.of("a", "bb", "ccc", "d", "ee", "fff")
+                        .collect(Collectors.toConcurrentMap(String::length,
+                                s -> s,
+                                (s1, s2) -> s1 + "," + s2));
+        assertThat(upper).contains(entry(1, "a,d"));
+        assertThat(upper).contains(entry(2, "bb,ee"));
+        assertThat(upper).contains(entry(3, "ccc,fff"));
     }
 
-    // FIXME: 2016/10/14
     @Test
     public void toConcurrentMapWithMapSupplier() {
-
+        // Collectors.toConcurrentMap(Function<? super T,? extends K> keyMapper,
+        //                            Function<? super T,? extends U> valueMapper,
+        //                            BinaryOperator<U> mergeFunction,
+        //                            Supplier<M> mapSupplier)
+        ConcurrentMap<Integer, String> upper =
+                Stream.of("a", "bb", "ccc", "d", "ee", "fff")
+                        .collect(Collectors.toConcurrentMap(String::length,
+                                s -> s,
+                                (s1, s2) -> s1 + "," + s2,
+                                ConcurrentHashMap::new));
+        assertThat(upper).contains(entry(1, "a,d"));
+        assertThat(upper).contains(entry(2, "bb,ee"));
+        assertThat(upper).contains(entry(3, "ccc,fff"));
     }
 
     @Test
