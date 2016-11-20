@@ -2,28 +2,34 @@ package lombok;
 
 import lombok.experimental.Accessors;
 import org.junit.Test;
+import org.junit.experimental.runners.Enclosed;
+import org.junit.runner.RunWith;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@RunWith(Enclosed.class)
 public class LombokExampleTest {
 
-    @Accessors(fluent = true)
-    public class AccessorsExample {
-        @Getter
-        @Setter
-        private String foo = "abc";
-    }
+    public class AccessorsTest {
 
-    @Test
-    public void accessorsTest() {
-        AccessorsExample acc = new AccessorsExample();
+        @Accessors(fluent = true)
+        public class AccessorsExample {
+            @Getter
+            @Setter
+            private String foo = "abc";
+        }
 
-        // getter
-        acc.foo();
-        assertThat(acc.foo()).isEqualTo("abc");
+        @Test
+        public void accessorsTest() {
+            AccessorsExample acc = new AccessorsExample();
 
-        // setter
-        acc.foo("ccc");
-        assertThat(acc.foo()).isEqualTo("ccc");
+            // getter
+            acc.foo();
+            assertThat(acc.foo()).isEqualTo("abc");
+
+            // setter
+            acc.foo("ccc");
+            assertThat(acc.foo()).isEqualTo("ccc");
+        }
     }
 }
