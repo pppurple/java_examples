@@ -5,7 +5,6 @@ import lombok.experimental.FieldDefaults;
 import lombok.experimental.Wither;
 
 class FieldDefaultsExample {
-    private int num = 100;
 
     @Getter
     @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -20,7 +19,6 @@ class FieldDefaultsExample {
 
     @FieldDefaults(makeFinal = true)
     public static class FieldFinal {
-        int num = 100;
+        int num = 200;
     }
-
 }

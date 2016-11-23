@@ -8,6 +8,11 @@ import org.junit.Test;
 import org.junit.experimental.runners.Enclosed;
 import org.junit.runner.RunWith;
 
+import javax.validation.constraints.Min;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -20,7 +25,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @RunWith(Enclosed.class)
 public class LombokExampleTest {
 
-    public static class AccessorsExample {
+    public static class AccessorsExampleTest {
 
         @Accessors(chain = true)
         public class AccessorsChain {
@@ -81,7 +86,7 @@ public class LombokExampleTest {
         }
     }
 
-    public static class FieldDefaultsExample {
+    public static class FieldDefaultsExampleTest {
 
         @Test
         public void fieldPrivateTest() {
@@ -110,12 +115,11 @@ public class LombokExampleTest {
             // error
             // ff.num = 200;
 
-            assertThat(ff.num).isEqualTo(100);
+            assertThat(ff.num).isEqualTo(200);
         }
     }
 
     public static class WitherExampleTest {
-
 
         @Test
         public void WitherTest() {
@@ -126,6 +130,44 @@ public class LombokExampleTest {
             assertThat(origin).isNotEqualTo(generatedWith);
             assertThat(generatedWith.getAge()).isEqualTo(123);
             assertThat(generatedWith.getName()).isEqualTo("BBB");
+        }
+    }
+
+    public static class onXExampleTest {
+
+        @Test
+        public void OnXTest() throws NoSuchMethodException {
+
+            // constructor
+            Constructor con = OnXExample.class.getConstructor(String.class, int.class);
+            Annotation anoCons = con.getAnnotation(OnXExample.ConstructorAnnotation.class);
+            assertThat(anoCons).isInstanceOf(OnXExample.ConstructorAnnotation.class);
+
+            // setter
+            Method name = OnXExample.class.getMethod("setName", String.class);
+            Parameter[] paraSetter = name.getParameters();
+            Annotation anoSetter = paraSetter[0].getAnnotation(Min.class);
+            assertThat(anoSetter).isInstanceOf(Min.class);
+
+            // getter
+            Method num = OnXExample.class.getMethod("getNum");
+            Annotation anoGetter = num.getAnnotation(OnXExample.MethodAnnotation.class);
+            assertThat(anoGetter).isInstanceOf(OnXExample.MethodAnnotation.class);
+        }
+    }
+
+    public static class UtilityExampleTest {
+
+        @Test
+        public void UtilityTest() {
+            // error
+            // UtilityExample util = new UtilityExample();
+
+            int magicNum = UtilityExample.MAGIC_NUMBER;
+            assertThat(magicNum).isEqualTo(10);
+
+            int doubleNum = UtilityExample.doubleNum(200);
+            assertThat(doubleNum).isEqualTo(400);
         }
     }
 }
