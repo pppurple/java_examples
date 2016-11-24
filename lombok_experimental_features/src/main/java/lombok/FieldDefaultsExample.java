@@ -1,7 +1,7 @@
 package lombok;
 
-import lombok.experimental.Accessors;
 import lombok.experimental.FieldDefaults;
+import lombok.experimental.NonFinal;
 import lombok.experimental.Wither;
 
 class FieldDefaultsExample {
@@ -17,8 +17,11 @@ class FieldDefaultsExample {
         int num = 100;
     }
 
-    @FieldDefaults(makeFinal = true)
+    @FieldDefaults(makeFinal = true, level = AccessLevel.PUBLIC)
     public static class FieldFinal {
-        int num = 200;
+        int count = 200;
+
+        @NonFinal
+        String memo = "memorandum";
     }
 }

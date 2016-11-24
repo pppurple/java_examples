@@ -1,9 +1,5 @@
 package lombok;
 
-import lombok.experimental.Accessors;
-import lombok.experimental.ExtensionMethod;
-import lombok.experimental.FieldDefaults;
-import lombok.experimental.Wither;
 import org.junit.Test;
 import org.junit.experimental.runners.Enclosed;
 import org.junit.runner.RunWith;
@@ -13,12 +9,13 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
-import java.util.ArrayList;
-import java.util.Collection;
 
-import static lombok.FieldDefaultsExample.FieldLevelPrivate;
-import static lombok.FieldDefaultsExample.FieldLevelPublic;
-import static lombok.FieldDefaultsExample.FieldFinal;
+import lombok.FieldDefaultsExample.FieldLevelPrivate;
+import lombok.FieldDefaultsExample.FieldLevelPublic;
+import lombok.FieldDefaultsExample.FieldFinal;
+import lombok.AccessorsExample.AccessorsChain;
+import lombok.AccessorsExample.AccessorsFluent;
+import lombok.AccessorsExample.AccessorsPrefix;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -27,29 +24,12 @@ public class LombokExampleTest {
 
     public static class AccessorsExampleTest {
 
-        @Accessors(chain = true)
-        public class AccessorsChain {
-            @Setter
-            String bar;
-
-           void printBar() {
-                System.out.println("|" + this.bar + "|");
-           }
-        }
-
         @Test
         public void AccessorsChainTest() {
             AccessorsChain chain = new AccessorsChain();
             chain.setBar("AAA").printBar();
 
             assertThat(chain.setBar("AAA").getClass()).isEqualTo(AccessorsChain.class);
-        }
-
-        @Accessors(fluent = true)
-        public class AccessorsFluent {
-            @Getter
-            @Setter
-            private String foo = "abc";
         }
 
         @Test
@@ -63,13 +43,6 @@ public class LombokExampleTest {
             // setter
             acc.foo("ccc");
             assertThat(acc.foo()).isEqualTo("ccc");
-        }
-
-        public class AccessorsPrefix {
-            @Getter
-            @Setter
-            @Accessors(prefix = "pre")
-            String preZoo;
         }
 
         @Test
@@ -92,9 +65,8 @@ public class LombokExampleTest {
         public void fieldPrivateTest() {
             FieldLevelPrivate pri = new FieldLevelPrivate();
 
-            // error
+            // error!!
             // pri.text;
-
             assertThat(pri.getText()).isEqualTo("ABC");
         }
 
@@ -112,10 +84,13 @@ public class LombokExampleTest {
         public void FieldFinalTest() {
             FieldFinal ff = new FieldFinal();
 
-            // error
-            // ff.num = 200;
+            // final
+            // ff.num = 200; // error!!
+            assertThat(ff.count).isEqualTo(200);
 
-            assertThat(ff.num).isEqualTo(200);
+            // non final
+            ff.memo = "new memo";
+            assertThat(ff.memo).isEqualTo("new memo");
         }
     }
 
@@ -125,11 +100,17 @@ public class LombokExampleTest {
         public void WitherTest() {
             WitherExample origin = new WitherExample("abc", 123);
 
-            WitherExample generatedWith = origin.withName("BBB");
+            WitherExample newNameByWith = origin.withName("BBB");
 
-            assertThat(origin).isNotEqualTo(generatedWith);
-            assertThat(generatedWith.getAge()).isEqualTo(123);
-            assertThat(generatedWith.getName()).isEqualTo("BBB");
+            assertThat(origin).isNotEqualTo(newNameByWith);
+            assertThat(newNameByWith.getAge()).isEqualTo(123);
+            assertThat(newNameByWith.getName()).isEqualTo("BBB");
+
+            WitherExample newAgeByWith = origin.withAge(1_000);
+
+            assertThat(origin).isNotEqualTo(newAgeByWith);
+            assertThat(newAgeByWith.getAge()).isEqualTo(1_000);
+            assertThat(newAgeByWith.getName()).isEqualTo("abc");
         }
     }
 
