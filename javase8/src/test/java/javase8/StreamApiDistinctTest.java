@@ -5,6 +5,9 @@ import lombok.Data;
 import org.junit.Test;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -28,7 +31,7 @@ public class StreamApiDistinctTest {
     }
 
     @Test
-    public void streamApiDistinct() {
+    public void streamApiDistinctTest() {
         List<Person> distinct = persons.stream()
                 .distinct()
                 .collect(Collectors.toList());
@@ -37,7 +40,7 @@ public class StreamApiDistinctTest {
     }
 
     @Test
-    public void distinctByProperty() {
+    public void distinctByPropertyTest() {
         Map<String, Boolean> seenCountry = new HashMap<>();
         List<Person> distinctByCountry = persons.stream()
                 .filter(p -> seenCountry.putIfAbsent(p.country, Boolean.TRUE) == null)
@@ -49,6 +52,24 @@ public class StreamApiDistinctTest {
                 .filter(p -> seenAge.putIfAbsent(p.age, Boolean.TRUE) == null)
                 .collect(Collectors.toList());
         assertThat(distinctByAge).containsExactlyInAnyOrder(annie, bobby, cindy);
+    }
+
+    @Test
+    public void distinctByKeyTest() {
+        List<Person> distinctByCountry = persons.stream()
+                .filter(distinctByKey(p -> p.country))
+                .collect(Collectors.toList());
+        assertThat(distinctByCountry).containsExactlyInAnyOrder(annie, bobby, danny);
+
+        List<Person> distinctByAge = persons.stream()
+                .filter(distinctByKey(p -> p.age))
+                .collect(Collectors.toList());
+        assertThat(distinctByAge).containsExactlyInAnyOrder(annie, bobby, cindy);
+    }
+
+    public static <T> Predicate<T> distinctByKey(Function<? super T, ?> keyExtractor) {
+        Map<Object,Boolean> seen = new ConcurrentHashMap<>();
+        return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
     }
 
     @Data
