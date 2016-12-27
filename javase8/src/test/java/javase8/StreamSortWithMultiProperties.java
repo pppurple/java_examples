@@ -24,24 +24,15 @@ public class StreamSortWithMultiProperties {
 
     @Before
     public void setUp() {
-        Anna = new Person("Anna", 24);
-        Bobby = new Person("Bobby", 42);
-        Bob = new Person("Bobby", 30);
-        David = new Person("David", 33);
+        Anna = new Person("Anna", "Canada", 24);
+        Bobby = new Person("Bobby", "Brazil", 42);
+        Bob = new Person("Bobby", "America", 30);
+        David = new Person("David", "America", 33);
         persons = Arrays.asList(Anna, Bobby, Bob, David);
     }
 
     @Test
-    public void nameで昇順でsort() {
-        List<Person> sorted = persons.stream()
-                .sorted(Comparator.comparing(Person::getName))
-                .collect(Collectors.toList());
-        assertThat(sorted).containsSubsequence(Anna, Bob, David);
-        assertThat(sorted).containsSubsequence(Anna, Bobby, David);
-    }
-
-    @Test
-    public void nameで昇順でsort2() {
+    public void nameで昇順でsort_compareTo() {
         List<Person> sorted = persons.stream()
                 .sorted((a, b) -> a.getName().compareTo(b.getName()))
                 .collect(Collectors.toList());
@@ -50,9 +41,18 @@ public class StreamSortWithMultiProperties {
     }
 
     @Test
-    public void nameで昇順でsort3() {
+    public void nameで昇順でsort_comparator() {
         List<Person> sorted = persons.stream()
                 .sorted(comparatorWithName)
+                .collect(Collectors.toList());
+        assertThat(sorted).containsSubsequence(Anna, Bob, David);
+        assertThat(sorted).containsSubsequence(Anna, Bobby, David);
+    }
+
+    @Test
+    public void nameで昇順でsort_comparing() {
+        List<Person> sorted = persons.stream()
+                .sorted(Comparator.comparing(Person::getName))
                 .collect(Collectors.toList());
         assertThat(sorted).containsSubsequence(Anna, Bob, David);
         assertThat(sorted).containsSubsequence(Anna, Bobby, David);
@@ -68,32 +68,46 @@ public class StreamSortWithMultiProperties {
     }
 
     @Test
-    public void ageで昇順でsort() {
-
+    public void nameで昇順_countryで昇順でsort() {
+        List<Person> sorted = persons.stream()
+                .sorted(comparatorWithNameAndAge)
+                .collect(Collectors.toList());
+        assertThat(sorted).containsSequence(Anna, Bob, Bobby, David);
     }
 
     @Test
-    public void ageで降順でsort() {
-
-    }
-
-    @Test
-    public void nameで昇順ageで降順でsort() {
-
+    public void nameで昇順_countryで昇順でsort_関数合成() {
+        List<Person> sorted = persons.stream()
+                .sorted(comparatorWithFunctionSynthesis)
+                .collect(Collectors.toList());
+        assertThat(sorted).containsSequence(Anna, Bob, Bobby, David);
     }
 
     private Comparator<Person> comparatorWithName = (p1, p2) -> {
         return p1.getName().compareTo(p2.getName());
     };
 
-    private Comparator<Person> comparatorWithNameAndAge = (p1, p2) -> {
-
+    private Comparator<Person> comparatorWithCountry = (p1, p2) -> {
+        return p1.getCountry().compareTo(p2.getCountry());
     };
+
+    private Comparator<Person> comparatorWithNameAndAge = (p1, p2) -> {
+        int result = p1.getName().compareTo(p2.getName());
+        if (result != 0) {
+            return result;
+        }
+        return p1.getCountry().compareTo(p2.getCountry());
+    };
+
+    // 関数合成
+    private Comparator<Person> comparatorWithFunctionSynthesis
+            = comparatorWithName.thenComparing(comparatorWithCountry);
 
     @Value
     @FieldDefaults(level = AccessLevel.PRIVATE)
     private static class Person {
         String name;
+        String country;
         int age;
     }
 }
