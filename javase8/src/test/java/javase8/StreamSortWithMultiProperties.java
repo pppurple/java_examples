@@ -1,7 +1,6 @@
 package javase8;
 
 import lombok.AccessLevel;
-import lombok.Data;
 import lombok.Value;
 import lombok.experimental.FieldDefaults;
 import org.junit.Before;
