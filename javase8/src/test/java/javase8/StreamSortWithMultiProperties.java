@@ -1,7 +1,6 @@
 package javase8;
 
 import lombok.AccessLevel;
-import lombok.Data;
 import lombok.Value;
 import lombok.experimental.FieldDefaults;
 import org.junit.Before;
@@ -68,13 +67,13 @@ public class StreamSortWithMultiProperties {
         assertThat(sorted).containsSubsequence(David, Bobby, Anna);
     }
 
-    Comparator<Person> comparatorWithName = (p1, p2) -> {
+    private Comparator<Person> comparatorWithName = (p1, p2) -> {
         return p1.getName().compareTo(p2.getName());
     };
 
     @Value
     @FieldDefaults(level = AccessLevel.PRIVATE)
-    public static class Person {
+    private static class Person {
         String name;
         int age;
     }
