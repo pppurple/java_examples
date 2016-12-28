@@ -1,7 +1,7 @@
 package javase8;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Value;
 import org.junit.Test;
 
 import java.util.*;
@@ -72,7 +72,7 @@ public class StreamApiDistinctTest {
         return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
     }
 
-    @Data
+    @Value
     @AllArgsConstructor
     private static class Person {
         String name;
