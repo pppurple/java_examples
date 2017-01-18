@@ -1,5 +1,6 @@
 package javase8;
 
+import lombok.Value;
 import org.junit.Test;
 
 import java.util.Comparator;
@@ -13,13 +14,45 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class OptionalTest {
     @Test
+    public void of() {
+        Zoo zoo = new Zoo("zoo");
+        Optional<Zoo> ofZoo = Optional.of(zoo);
+
+        assertThat(ofZoo.get().getClass()).isEqualTo(Zoo.class);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void ofButNull() {
+        Zoo zoo = null;
+        Optional<Zoo> ofZoo = Optional.of(zoo);
+
+        assertThat(ofZoo.get().getClass()).isEqualTo(Zoo.class);
+    }
+
+    @Test
+    public void ofNullable() {
+        Zoo zoo = new Zoo("zoo");
+        Optional<Zoo> ofNullableZoo = Optional.ofNullable(zoo);
+
+        assertThat(ofNullableZoo.get().getClass()).isEqualTo(Zoo.class);
+
+        Zoo zooNull = null;
+        Optional<Zoo> ofNullableZooNull = Optional.ofNullable(zooNull);
+
+        assertThat(ofNullableZooNull.isPresent()).isFalse();
+    }
+
+    @Test
     public void get() {
         Optional<String> any = Stream.of("aaa", "bbb", "ccc")
                 .filter(s -> s.endsWith("bbb"))
                 .findAny();
         String get = any.get();
         assertThat(get).isEqualTo("bbb");
+    }
 
+    @Test
+    public void getAsInt() {
         OptionalInt intAny = IntStream.rangeClosed(1, 10)
                 .filter(i -> i == 3)
                 .findAny();
@@ -36,12 +69,28 @@ public class OptionalTest {
     }
 
     @Test
+    public void ifPresent() {
+        Optional<String> any = Stream.of("aaa", "bbb", "ccc")
+                .filter(s -> s.endsWith("bbb"))
+                .findAny();
+        any.ifPresent(System.out::println);
+    }
+
+    @Test
+    public void isPresent() {
+        Optional<String> any = Stream.of("aaa", "bbb", "ccc")
+                .filter(s -> s.endsWith("bbb"))
+                .findAny();
+        assertThat(any.isPresent()).isTrue();
+    }
+
+    @Test
     public void orElse() {
         Optional<String> any = Stream.of("aaa", "bbb", "ccc")
                 .filter(s -> s.endsWith("ddd"))
                 .findAny();
-        String get = any.orElse("defo");
-        assertThat(get).isEqualTo("defo");
+        String get = any.orElse("fallback");
+        assertThat(get).isEqualTo("fallback");
 
         OptionalInt intAny = IntStream.rangeClosed(1, 10)
                 .filter(i -> i == 12)
@@ -71,15 +120,7 @@ public class OptionalTest {
         Optional<String> any = Stream.of("aaa", "bbb", "ccc")
                 .filter(s -> s.endsWith("ddd"))
                 .findAny();
-        String get = any.orElseThrow(() -> new IllegalArgumentException());
-    }
-
-    @Test
-    public void ifPresent() {
-        Stream.of("aaa", "bbb", "ccc")
-                .filter(s -> s.endsWith("bbb"))
-                .findAny()
-                .ifPresent(System.out::println);
+        String get = any.orElseThrow(IllegalArgumentException::new);
     }
 
     @Test
@@ -115,5 +156,10 @@ public class OptionalTest {
 
         String result = max.get();
         assertThat(result).isEqualTo("ccc8");
+    }
+
+    @Value
+    private static class Zoo {
+        String name;
     }
 }
