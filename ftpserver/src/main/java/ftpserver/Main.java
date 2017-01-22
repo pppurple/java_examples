@@ -11,6 +11,8 @@ public class Main {
         try(ServerSocket server = new ServerSocket(PORT)) {
             server.setSoTimeout(SO_TIMEOUT);
 
+            System.out.println("[INFO]FTP Server started.");
+
             for(;;){
                 Socket client = server.accept();
                 FtpServerThread ftpServerThread = new FtpServerThread(client);

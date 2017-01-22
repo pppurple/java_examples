@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.RandomAccessFile;
 import java.net.InetAddress;
@@ -28,22 +29,27 @@ public class FtpServerThread implements Runnable {
             int ip = -1;
 
             InetAddress clientInet = client.getInetAddress();
-            String host = clientInet.toString();
-            int idx = host.indexOf("/");
-            host = host.substring(idx + 1);
+            String hostWithMask = clientInet.toString();
+            System.out.println("hostWithMask:" + hostWithMask);
+            int idx = hostWithMask.indexOf("/");
+//            String host = hostWithMask.substring(idx + 1);
+            String host = clientInet.getHostAddress();
+            System.out.println("host:" + host);
 
             BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));
             PrintWriter out = new PrintWriter(client.getOutputStream(), true);
 
             out.println("220 Welcome to simple server.\r");
 
-            boolean done = false;
-            while(!done){
+//            boolean done = false;
+//            while(!done){
+            while(true){
+
                 String line = in.readLine();
                 System.out.println("[host: " + host + "]" + line) ;
 
                 if(line == null){
-                    done = true;
+//                    done = true;
                     break;
                 }
                 if(line.startsWith("USER")){
@@ -76,6 +82,7 @@ public class FtpServerThread implements Runnable {
                     int ip2 = Integer.parseInt(a2);
                     ip = ip1 * 16 * 16 + ip2;
                 }
+
                 if (line.startsWith("STOR")) {
                     out.println("150 Binary data connection");
                     String file = line.substring(4).trim();
@@ -100,7 +107,8 @@ public class FtpServerThread implements Runnable {
 
                 if (line.startsWith("QUIT")) {
                     out.println("Goodbye");
-                    done = true;
+                    break;
+//                    done = true;
                 }
             }
 
