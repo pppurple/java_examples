@@ -10,7 +10,7 @@ public class SendResponse {
         Util.writeLine(output, "220 Welcome to simple server.");
     }
 
-    static void sendOkResponse(OutputStream output, InputStream fis, String ext) throws Exception {
+/*    static void sendOkResponse(OutputStream output, InputStream fis, String ext) throws Exception {
 
         Util.writeLine(output, "HTTP/1.1 200 OK");
         Util.writeLine(output, "Date: " + Util.getDateStringUtc());
@@ -48,5 +48,5 @@ public class SendResponse {
                 output.write(ch);
             }
         }
-    }
+    }*/
 }

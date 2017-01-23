@@ -28,6 +28,7 @@ public class FtpServerThread implements Runnable {
         try {
             int ip = -1;
 
+            // clien IPアドレス取得
             InetAddress clientInet = client.getInetAddress();
             String hostWithMask = clientInet.toString();
             System.out.println("hostWithMask:" + hostWithMask);
@@ -39,34 +40,31 @@ public class FtpServerThread implements Runnable {
             BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));
             PrintWriter out = new PrintWriter(client.getOutputStream(), true);
 
-            out.println("220 Welcome to simple server.\r");
+            out.println("220 Service ready for new user.");
 
-//            boolean done = false;
-//            while(!done){
             while(true){
 
                 String line = in.readLine();
-                System.out.println("[host: " + host + "]" + line) ;
+                System.out.println("[DEBUG]host: " + host + ", line: " + line) ;
 
-                if(line == null){
-//                    done = true;
+                if (line == null){
                     break;
                 }
-                if(line.startsWith("USER")){
-                    out.println("331 Password required for username.\r");
+                if (line.startsWith("USER")){
+                    out.println("331 User name okay, need password.");
                 }
-                if(line.startsWith("PASS")){
-                    out.println("230 Login successful.\r");
+                if (line.startsWith("PASS")){
+                    out.println("230 User logged in proceed.");
                 }
-                if(line.startsWith("SYST")){
-                    out.println("215 UNIX Type: L8.\r");
+                if (line.startsWith("SYST")){
+                    out.println("215 NAME system type.");
                 }
-                if(line.startsWith("TYPE")){
-                    out.println("200 Switching to $line mode.\r");
+                if (line.startsWith("TYPE")){
+                    out.println("200 TYPE Command okay.");
                 }
 
-                if(line.startsWith("PORT")){
-                    out.println("200 PORT command successful.\r");
+                if (line.startsWith("PORT")){
+                    out.println("200 PORT Command okay.");
                     String a1 = "";
                     String a2 = "";
                     int lng = line.length() - 1;
@@ -84,7 +82,7 @@ public class FtpServerThread implements Runnable {
                 }
 
                 if (line.startsWith("STOR")) {
-                    out.println("150 Binary data connection");
+                    out.println("150 File status okay; about to open data connection.");
                     String file = line.substring(4).trim();
                     System.out.println("file:" + file);
                     System.out.println("dir:" + dir);
@@ -98,17 +96,20 @@ public class FtpServerThread implements Runnable {
                             inFile.write(bb, 0, amount);
                         }
                         inStor.close();
-                        out.println("226 transfer complete");
+                        out.println("226 Closing data connection.");
                         inFile.close();
                         sock.close();
                     } catch (IOException e) {
+                        System.out.println("[ERROR] cause:" + e.getMessage());
                     }
                 }
-
+                // 拡張機能の設定
+                if (line.startsWith("OPTS")){
+                    out.println("200 UTF8 set to on.\r");
+                }
                 if (line.startsWith("QUIT")) {
                     out.println("Goodbye");
                     break;
-//                    done = true;
                 }
             }
 
