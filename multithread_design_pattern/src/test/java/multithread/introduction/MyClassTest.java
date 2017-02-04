@@ -2,8 +2,6 @@ package multithread.introduction;
 
 import org.junit.Test;
 
-import static org.junit.Assert.*;
-
 public class MyClassTest {
     @Test
     public void 同時実行可_インスタンスメソッド() {
