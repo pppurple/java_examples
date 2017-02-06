@@ -118,7 +118,7 @@ public class MyClassTest {
             clazz1.syncStaticMethodA();
         };
         Runnable taskStaticSync2 = () -> {
-            clazz2.syncStaticMethodA();
+            clazz2.syncStaticMethodB();
         };
 
         new Thread(taskStaticSync1).start();
