@@ -1,7 +1,7 @@
 package multithread.introduction;
 
 public class WaitAndNotify {
-    synchronized void waitThread() {
+    synchronized void threadWait() {
         System.out.println("wait!");
         try {
             wait();
@@ -11,7 +11,7 @@ public class WaitAndNotify {
         System.out.println("unlocked!");
     }
 
-    synchronized void notifyThread() {
+    synchronized void threadNotify() {
         notify();
         System.out.println("notified!");
     }
