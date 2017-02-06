@@ -16,7 +16,6 @@ public class User implements Runnable {
             for (int i = 0; i < 3; i++) {
                 Thread.sleep(random.nextInt(3000));
                 worker.process();
-//                Thread.sleep(random.nextInt(3000));
             }
 
         } catch (InterruptedException e) {
