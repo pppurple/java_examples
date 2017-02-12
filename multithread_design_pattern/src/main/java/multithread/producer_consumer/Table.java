@@ -35,4 +35,18 @@ public class Table {
         System.out.println(Thread.currentThread().getName() + " takes " + cake);
         return cake;
     }
+
+    // extension
+    public synchronized void clear() {
+        while (count > 0) {
+            String cake = buffer[head];
+            System.out.println(Thread.currentThread().getName() + " clears " + cake);
+            head = (head + 1) % buffer.length;
+            count--;
+        }
+        head = 0;
+        tail = 0;
+        count = 0;
+        notifyAll();
+    }
 }

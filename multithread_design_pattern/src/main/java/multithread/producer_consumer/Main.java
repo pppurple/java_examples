@@ -9,5 +9,7 @@ public class Main {
         new Thread(new EaterTask(table, 321321L), "Eater1").start();
         new Thread(new EaterTask(table, 432432L), "Eater2").start();
         new Thread(new EaterTask(table, 543543L), "Eater3").start();
+        // extension
+        new Thread(new ClearTask(table), "Clear").start();
     }
 }
