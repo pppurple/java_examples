@@ -12,6 +12,6 @@ public class MusicPlayer {
 
     @Override
     public synchronized String toString() {
-        return "play count:" + playCount + ", user name:" + userName;
+        return "play count:" + playCount + ", user message:" + userName;
     }
 }

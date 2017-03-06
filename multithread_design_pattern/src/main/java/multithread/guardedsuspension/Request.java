@@ -13,6 +13,6 @@ public class Request {
 
     @Override
     public String toString() {
-        return "Request{" + "name='" + name + '\'' + '}';
+        return "Request{" + "message='" + name + '\'' + '}';
     }
 }
