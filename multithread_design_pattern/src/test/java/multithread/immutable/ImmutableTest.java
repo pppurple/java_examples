@@ -1,10 +1,7 @@
 package multithread.immutable;
 
 import com.google.common.collect.ImmutableList;
-import multithread.immutable.fortest.MyMutable;
-import multithread.immutable.fortest.Person;
-import multithread.immutable.fortest.PersonHasMutable;
-import multithread.immutable.fortest.PersonWithValue;
+import multithread.immutable.fortest.*;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -12,7 +9,6 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.filter;
 
 public class ImmutableTest {
     @Test
@@ -93,7 +89,7 @@ public class ImmutableTest {
 
     @Test
     public void lombokValueTest() {
-        PersonWithValue person = new PersonWithValue("anna", "Jpana", 28);
+        PersonWithValue person = new PersonWithValue("anna", "Japan", 28);
 
         // error
         // person.setMessage("Bobby");
@@ -102,7 +98,12 @@ public class ImmutableTest {
 
     @Test
     public void lombokValueBuilderTest() {
-        PersonWithValue person = new PersonWithValue("anna", "Jpana", 28);
+        PersonWithBuilder person = PersonWithBuilder
+                .builder()
+                .name("anna")
+                .country("Japan")
+                .age(28)
+                .build();
 
         // error
         // person.setMessage("Bobby");
