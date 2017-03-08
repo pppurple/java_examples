@@ -4,13 +4,14 @@ public class WaitInterruptMain {
     public static void main(String[] args) throws InterruptedException {
 
         Thread waitThread = new Thread(new WaitTask());
-        Thread interruptThread = new Thread(new InterruptTask(waitThread));
-
         waitThread.start();
-        Thread.sleep(1_000);
+
         System.out.println(waitThread.getName() + " isInterrupted: " + waitThread.isInterrupted());
+
         Thread.sleep(1_000);
-        interruptThread.start();
+        waitThread.interrupt();
+
+        System.out.println(waitThread.getName() + " isInterrupted: " + waitThread.isInterrupted());
     }
 
     public static class WaitTask implements Runnable {
@@ -26,19 +27,6 @@ public class WaitInterruptMain {
 
         private synchronized void doWait() throws InterruptedException {
             wait();
-        }
-    }
-
-    public static class InterruptTask implements Runnable {
-        private final Thread target;
-
-        public InterruptTask(Thread target) {
-            this.target = target;
-        }
-
-        @Override
-        public void run() {
-            target.interrupt();
         }
     }
 }

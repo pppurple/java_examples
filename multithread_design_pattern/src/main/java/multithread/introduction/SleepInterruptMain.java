@@ -4,13 +4,14 @@ public class SleepInterruptMain {
     public static void main(String[] args) throws InterruptedException {
 
         Thread sleepThread = new Thread(new SleepTask());
-        Thread interruptThread = new Thread(new InterruptTask(sleepThread));
-
         sleepThread.start();
-        Thread.sleep(1_000);
+
         System.out.println(sleepThread.getName() + " isInterrupted: " + sleepThread.isInterrupted());
+
         Thread.sleep(1_000);
-        interruptThread.start();
+        sleepThread.interrupt();
+
+        System.out.println(sleepThread.getName() + " isInterrupted: " + sleepThread.isInterrupted());
     }
 
     public static class SleepTask implements Runnable {
@@ -22,19 +23,6 @@ public class SleepInterruptMain {
             } catch (InterruptedException e) {
                 System.out.println(Thread.currentThread().getName() + " Interrupt!");
             }
-        }
-    }
-
-    public static class InterruptTask implements Runnable {
-        private final Thread target;
-
-        public InterruptTask(Thread target) {
-            this.target = target;
-        }
-
-        @Override
-        public void run() {
-            target.interrupt();
         }
     }
 }
