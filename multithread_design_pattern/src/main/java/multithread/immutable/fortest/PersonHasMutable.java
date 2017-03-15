@@ -1,6 +1,6 @@
 package multithread.immutable.fortest;
 
-public class PersonHasMutable {
+public final class PersonHasMutable {
     private final String name;
     private final String country;
     private final int age;
