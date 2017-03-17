@@ -15,8 +15,8 @@ public class ImmutableTest {
     public void personTest() {
         final Person person = new Person("Anne", "Japan", 28);
         // error
-        // person.setMessage("Bobby");
-        // person.message("Cindy");
+        // person.setName("Bobby");
+        // person.name("Cindy");
     }
 
     @Test
@@ -40,6 +40,7 @@ public class ImmutableTest {
         final List<String> unmodified = Collections.unmodifiableList(list);
 
         // addの操作自体はコンパイルが通る
+        // 実行時にUnsupportedOperationExceptionが発生する
         unmodified.add("ccc");
     }
 
@@ -68,6 +69,7 @@ public class ImmutableTest {
         final List<String> immutableList2 = ImmutableList.copyOf(list);
 
         // addの操作自体はコンパイルが通る
+        // 実行時にUnsupportedOperationExceptionが発生する
         immutableList.add("ccc");
     }
 
@@ -92,8 +94,8 @@ public class ImmutableTest {
         PersonWithValue person = new PersonWithValue("anna", "Japan", 28);
 
         // error
-        // person.setMessage("Bobby");
-        // person.message("Cindy");
+        // person.setName("Bobby");
+        // person.name("Cindy");
     }
 
     @Test
@@ -106,7 +108,7 @@ public class ImmutableTest {
                 .build();
 
         // error
-        // person.setMessage("Bobby");
-        // person.message("Cindy");
+        // person.setName("Bobby");
+        // person.name("Cindy");
     }
 }
