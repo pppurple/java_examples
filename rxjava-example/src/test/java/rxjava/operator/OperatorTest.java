@@ -80,7 +80,43 @@ public class OperatorTest {
     }
 
     @Test
-    public void deferTest() {
+    public void deferTest() throws InterruptedException {
+        Flowable<LocalTime> flowable = Flowable.defer(() -> Flowable.just(LocalTime.now()));
+
+        flowable.subscribe(new DebugSubscriber<>("No.1"));
+
+        Thread.sleep(2_000L);
+
+        flowable.subscribe(new DebugSubscriber<>("No.2"));
+    }
+
+    @Test
+    public void emptyTest() {
+        Flowable.empty().subscribe(new DebugSubscriber<>());
+    }
+
+    @Test
+    public void errorTest() {
+        Flowable.error(new Exception("exception!!"))
+                .subscribe(new DebugSubscriber<>());
+    }
+
+    @Test
+    public void neverTest() {
+        Flowable.never()
+                .subscribe(new DebugSubscriber<>());
+    }
+
+    @Test
+    public void mapTest() {
+        Flowable<String> flowable = Flowable.just("A", "B", "C", "D", "E")
+                .map(String::toLowerCase);
+
+        flowable.subscribe(new DebugSubscriber<>());
+    }
+
+    @Test
+    public void flatMapTest() {
 
     }
 }
