@@ -5,8 +5,6 @@ import org.junit.Test;
 import java.util.Date;
 import java.util.concurrent.*;
 
-import static org.junit.Assert.*;
-
 public class MainTest {
     @Test
     public void newSingleThreadExecutorTest() throws InterruptedException {
@@ -21,11 +19,6 @@ public class MainTest {
         } finally {
             executorService.shutdown();
         }
-    }
-
-    @Test
-    public void threadPoolExecutorTest() {
-        // ???
     }
 
     @Test
@@ -82,6 +75,7 @@ public class MainTest {
         ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
         ScheduledExecutorSupplier supplier = new ScheduledExecutorSupplier(scheduledExecutorService);
         try {
+            System.out.println(new Date() + ":start");
             supplier.doSomething();
             supplier.doSomething();
             supplier.doSomething();
@@ -94,9 +88,11 @@ public class MainTest {
     @Test
     public void newScheduledThreadPoolTest() throws InterruptedException {
         // newScheduledThreadPool
-        ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(3);
+        ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(2);
         ScheduledExecutorSupplier supplier = new ScheduledExecutorSupplier(scheduledExecutorService);
         try {
+            System.out.println(new Date() + ":start");
+            supplier.doSomething();
             supplier.doSomething();
             supplier.doSomething();
             supplier.doSomething();
@@ -123,11 +119,6 @@ public class MainTest {
         }
     }
 
-    @Test
-    public void unconfigurableExecutorServiceTest() {
-
-    }
-
     private static class ExecutorSupplier {
         private final Executor executor;
 
@@ -145,15 +136,27 @@ public class MainTest {
         }
     }
 
-    private static class ScheduledExecutorSupplier {
-        private final ScheduledExecutorService executorService;
+    private static class ExecutorServiceSupplier {
+        private final ExecutorService executorService;
 
-        public ScheduledExecutorSupplier(ScheduledExecutorService executorService) {
+        public ExecutorServiceSupplier(ExecutorService executorService) {
             this.executorService = executorService;
         }
 
+        public Future doSomething(Runnable task) {
+            return executorService.submit(task::run);
+        }
+    }
+
+    private static class ScheduledExecutorSupplier {
+        private final ScheduledExecutorService scheduledExecutorService;
+
+        public ScheduledExecutorSupplier(ScheduledExecutorService scheduledExecutorService) {
+            this.scheduledExecutorService = scheduledExecutorService;
+        }
+
         public void doSomething() {
-            executorService.schedule(
+            scheduledExecutorService.schedule(
                     () -> {
                         // doSomething
                         System.out.println(new Date() + ":" + Thread.currentThread().getName());
