@@ -1,12 +1,16 @@
 package rxjava.operator;
 
 import io.reactivex.Flowable;
+import io.reactivex.Single;
 import org.junit.Test;
+import rxjava.base.DebugSingleObserver;
 import rxjava.base.DebugSubscriber;
 
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.*;
@@ -214,4 +218,82 @@ public class OperatorTest {
         Thread.sleep(4_000L);
     }
 
+    @Test
+    public void toListTest() {
+        Single<List<String>> single = Flowable.just("A", "B", "C", "D", "E")
+                .toList();
+        single.subscribe(new DebugSingleObserver<List<String>>());
+    }
+
+    @Test
+    public void toMapTest() {
+        // toMap(keySelector)
+        Single<Map<Long, String>> single = Flowable.just("1A", "2B", "3C", "1D", "2E")
+                .toMap(data -> Long.valueOf(data.substring(0, 1)));
+        single.subscribe(new DebugSingleObserver<Map<Long, String>>());
+
+        // toMap(keySelector, valueSelector)
+        Single<Map<Long, String>> single2 = Flowable.just("1A", "2B", "3C", "1D", "2E")
+                .toMap(
+                        data -> Long.valueOf(data.substring(0, 1)),
+                        data -> data.substring(1)
+                );
+        single2.subscribe(new DebugSingleObserver<Map<Long, String>>());
+    }
+
+    @Test
+    public void toMultimapTest() throws InterruptedException {
+        // toMultimap(keySelector)
+        Single<Map<String, Collection<Long>>> single = Flowable.interval(500L, TimeUnit.MILLISECONDS)
+                .take(5)
+                .toMultimap(data -> {
+                    if (data % 2 == 0) {
+                        return "even";
+                    } else {
+                        return "odd";
+                    }
+                });
+        single.subscribe(new DebugSingleObserver<Map<String, Collection<Long>>>());
+        Thread.sleep(3_000L);
+    }
+
+    @Test
+    public void filterTest() throws InterruptedException {
+        Flowable<Long> flowable = Flowable.interval(300L, TimeUnit.MILLISECONDS)
+                .filter(data -> data % 2 == 0);
+        flowable.subscribe(new DebugSubscriber<Long>());
+        Thread.sleep(3_000L);
+    }
+
+    @Test
+    public void distinctTest() {
+        // distinct()
+        Flowable<String> flowable = Flowable.just("A", "B", "C", "A", "D", "C")
+                .distinct();
+        flowable.subscribe(new DebugSubscriber<String>());
+
+        // distinct(keySelector)
+        Flowable<String> flowable2 = Flowable.just("A", "B", "C", "a", "d", "c")
+                .distinct(String::toLowerCase);
+        flowable2.subscribe(new DebugSubscriber<String>());
+    }
+
+    @Test
+    public void distinctUntilChangedTest() {
+        // distinctUntilChanged()
+        Flowable<String> flowable = Flowable.just("A", "a", "a", "A", "a")
+                .distinctUntilChanged();
+        flowable.subscribe(new DebugSubscriber<String>());
+
+        // distinctUntilChanged(comparer)
+        Flowable<String> flowable2 = Flowable.just("A", "a", "B", "b", "b")
+                .distinctUntilChanged((data1, data2) ->
+                        data1.toUpperCase().equals(data2.toUpperCase()));
+        flowable2.subscribe(new DebugSubscriber<String>());
+    }
+
+    @Test
+    public void takeTest() {
+        
+    }
 }
