@@ -2,6 +2,7 @@ package rxjava.gettingstarted;
 
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
+import io.reactivex.schedulers.Schedulers;
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
 
@@ -10,13 +11,19 @@ import java.util.stream.IntStream;
 
 public class FlowableExample {
     public static void main(String[] args) throws InterruptedException {
-        Flowable<Integer> flowable = Flowable.create(emitter -> {
+/*        Flowable<Integer> flowable = Flowable.create(emitter -> {
             IntStream.rangeClosed(1, 10)
                     .forEach(emitter::onNext);
             emitter.onComplete();
-        }, BackpressureStrategy.BUFFER);
+        }, BackpressureStrategy.BUFFER);*/
 
-        flowable.subscribe(new Subscriber<Integer>() {
+        Flowable flowable = Flowable.interval(300L, TimeUnit.MILLISECONDS)
+                .take(10)
+                .onBackpressureBuffer();
+
+        flowable.observeOn(Schedulers.computation(), false, 1)
+                .subscribe(new MySubscriber(2));
+/*        flowable.subscribe(new Subscriber<Integer>() {
             private Subscription subscription;
 
             @Override
@@ -41,6 +48,8 @@ public class FlowableExample {
             public void onError(Throwable throwable) {
                 throwable.printStackTrace();
             }
-        });
+        });*/
+
+        Thread.sleep(5_000L);
     }
 }

@@ -3,7 +3,7 @@ package rxjava.gettingstarted;
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
 
-public class MySubscriber implements Subscriber {
+public class MySubscriber<T> implements Subscriber<T> {
     private Subscription subscription;
     private long requestNum;
 
@@ -16,12 +16,19 @@ public class MySubscriber implements Subscriber {
     public void onSubscribe(Subscription subscription) {
         System.out.println("onSubscribe");
         this.subscription = subscription;
+        System.out.println("**request:" + requestNum);
         this.subscription.request(requestNum);
     }
 
     @Override
-    public void onNext(Object data) {
+    public void onNext(T data) {
         System.out.println("onNext: " + data);
+        try {
+            Thread.sleep(1_000L);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        System.out.println("**request:" + requestNum);
         subscription.request(requestNum);
     }
 
