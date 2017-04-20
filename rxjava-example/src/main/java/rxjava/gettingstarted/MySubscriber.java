@@ -24,12 +24,13 @@ public class MySubscriber<T> implements Subscriber<T> {
     public void onNext(T data) {
         System.out.println("onNext: " + data);
         try {
-            Thread.sleep(1_000L);
+            Thread.sleep(1000L);
+            System.out.println("AAAAAAAAAAAAA");
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
         System.out.println("**request:" + requestNum);
-        subscription.request(requestNum);
+//        subscription.request(requestNum);
     }
 
     @Override
