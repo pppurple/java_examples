@@ -5,14 +5,14 @@ import io.reactivex.schedulers.Schedulers;
 
 import java.util.concurrent.TimeUnit;
 
-public class BackpressureBufferWithCapacity {
+public class BackpressureDrop {
     public static void main(String[] args) throws InterruptedException {
 
-        Flowable<Long> flowable = Flowable.interval(10L, TimeUnit.MILLISECONDS)
-                .take(10)
+        Flowable<Long> flowable = Flowable.interval(300L, TimeUnit.MILLISECONDS)
+                .take(20)
                 .doOnSubscribe(subscription -> System.out.println("<-- subscribe"))
                 .doOnNext(data -> System.out.println("Flowable generated data:" + data))
-                .onBackpressureBuffer(3);
+                .onBackpressureDrop();
 
         flowable.doOnRequest(req -> System.out.println("<-- request: " + req))
                 .observeOn(Schedulers.computation(), false, 2)
