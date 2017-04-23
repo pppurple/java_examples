@@ -16,6 +16,7 @@ public class BackpressureBuffer {
 
         flowable.doOnRequest(req -> System.out.println("<-- request: " + req))
                 .observeOn(Schedulers.computation(), false, 2)
+                .doOnRequest(req -> System.out.println("  <-- request: " + req))
                 .subscribe(new MySubscriber<>());
 
         Thread.sleep(11_000L);

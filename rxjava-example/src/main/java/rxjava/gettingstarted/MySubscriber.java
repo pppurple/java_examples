@@ -9,14 +9,15 @@ public class MySubscriber<T> implements Subscriber<T> {
 
         @Override
         public void onSubscribe(Subscription subscription) {
-            System.out.println("--> onSubscribe");
+            System.out.println("  --> onSubscribe");
             this.subscription = subscription;
             this.subscription.request(Long.MAX_VALUE);
+//            this.subscription.request(2);
         }
 
         @Override
         public void onNext(T data) {
-            System.out.println("--> onNext: " + data);
+            System.out.println("  --> onNext: " + data);
             try {
                 Thread.sleep(1000L);
             } catch (InterruptedException e) {
@@ -26,11 +27,12 @@ public class MySubscriber<T> implements Subscriber<T> {
 
         @Override
         public void onError(Throwable throwable) {
+            System.out.println("onError!!!");
             throwable.printStackTrace();
         }
 
         @Override
         public void onComplete() {
-            System.out.println("--> onComplete");
+            System.out.println("  --> onComplete");
         }
 }
