@@ -1,9 +1,7 @@
-package rxjava.gettingstarted;
+package rxjava.back_pressure;
 
 import io.reactivex.Flowable;
 import io.reactivex.schedulers.Schedulers;
-import org.reactivestreams.Subscriber;
-import org.reactivestreams.Subscription;
 
 import java.util.concurrent.TimeUnit;
 
@@ -20,6 +18,7 @@ public class BackpressureDrop {
                 .observeOn(Schedulers.computation(), false, 2)
                 .doOnRequest(req -> System.out.println("  <-- request: " + req))
                 .subscribe(new MySubscriber<>());
+
         Thread.sleep(11_000L);
     }
 }

@@ -1,4 +1,4 @@
-package rxjava.gettingstarted;
+package rxjava.back_pressure;
 
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
