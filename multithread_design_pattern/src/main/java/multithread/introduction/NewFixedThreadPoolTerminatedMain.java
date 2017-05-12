@@ -28,5 +28,4 @@ public class NewFixedThreadPoolTerminatedMain {
         System.out.println("isShutdown: " + executorService.isShutdown());
         System.out.println("isTerminated: " + executorService.isTerminated());
     }
-
 }

@@ -1,7 +1,5 @@
 package multithread.introduction;
 
-import java.util.stream.IntStream;
-
 public class ThreadIsAliveMain {
     public static void main(String[] args) throws InterruptedException {
         Thread myTask = new Thread(new MyTask());
@@ -19,7 +17,7 @@ public class ThreadIsAliveMain {
             System.out.println(Thread.currentThread().getName() + " START");
 
             int count = 0;
-            for (int i = 0; i < 10; i ++) {
+            for (int i = 0; i < 5; i ++) {
                 try {
                     System.out.println(count);
                     count++;

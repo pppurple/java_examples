@@ -6,9 +6,11 @@ public class ThreadJoinMain {
         myTask.start();
 
         System.out.println("isAlive: " + myTask.isAlive());
+        System.out.println("state: " + myTask.getState().name());
 
         myTask.join();
 
         System.out.println("isAlive: " + myTask.isAlive());
+        System.out.println("state: " + myTask.getState().name());
     }
 }
