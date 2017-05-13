@@ -8,6 +8,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Month;
+import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoField;
@@ -74,9 +75,16 @@ public class DateAndTimeApiTest {
     @Test
     public void from() {
         LocalDateTime from = LocalDateTime.of(2016, 9, 25, 12, 55, 10);
-
         LocalDateTime to = LocalDateTime.from(from);
         assertThat(to.toString()).isEqualTo("2016-09-25T12:55:10");
+
+        LocalDate fromDate = LocalDate.of(2016, 9, 25);
+        LocalDate toDate = LocalDate.from(fromDate);
+        assertThat(toDate.toString()).isEqualTo("2016-09-25");
+
+        LocalTime fromTime = LocalTime.of(12, 55, 10);
+        LocalTime toTime = LocalTime.from(fromTime);
+        assertThat(toTime.toString()).isEqualTo("12:55:10");
     }
 
     @Test
@@ -463,6 +471,13 @@ public class DateAndTimeApiTest {
         // isEqual
         LocalDateTime dateTime3 = dateTime1.plusSeconds(1L);
         assertThat(dateTime2.isEqual(dateTime3)).isEqualTo(true);
+    }
+
+    @Test
+    public void DateTimeToDate() {
+        // Datetime → Date
+//        OffsetDateTime dateTime1 = OffsetDateTime.of(2016, 9, 25, 20, 55, 10, );
+
     }
 
     @Test
