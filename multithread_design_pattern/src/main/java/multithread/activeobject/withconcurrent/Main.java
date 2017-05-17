@@ -10,6 +10,8 @@ public class Main {
             new MakerClientThread("Alice", activeObject).start();
             new MakerClientThread("Bobby", activeObject).start();
             new DisplayClientThread("Alice", activeObject).start();
+            Thread.sleep(5_000L);
+        } catch (InterruptedException ignored) {
         } finally {
             System.out.println("*** shutdown ***");
             activeObject.shutdown();
