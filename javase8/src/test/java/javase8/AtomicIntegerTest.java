@@ -17,11 +17,9 @@ public class AtomicIntegerTest {
     @Ignore
     @Test
     public void atomicIncrementTest() throws InterruptedException {
-        List<Integer> list = new CopyOnWriteArrayList<>();
-
         Runnable addTask = () -> {
             for (int i = 0; i < 50_000; i++) {
-                list.add(atomicInt.incrementAndGet());
+                atomicInt.incrementAndGet();
             }
         };
         new Thread(addTask).start();
@@ -29,19 +27,15 @@ public class AtomicIntegerTest {
 
         Thread.sleep(5_000L);
 
-        Collections.sort(list);
-
-        list.forEach(System.out::println);
+        System.out.println(atomicInt.get());
     }
 
     @Ignore
     @Test
     public void notAtomicIncrementTest() throws InterruptedException {
-        List<Integer> list = new CopyOnWriteArrayList<>();
-
         Runnable addTask = () -> {
             for (int i = 0; i < 50_000; i++) {
-                list.add(notAtomicInt++);
+                notAtomicInt++;
             }
         };
         new Thread(addTask).start();
@@ -49,15 +43,12 @@ public class AtomicIntegerTest {
 
         Thread.sleep(5_000L);
 
-        Collections.sort(list);
-
-        list.forEach(System.out::println);
+        System.out.println(notAtomicInt);
     }
 
+    @Ignore
     @Test
-    public void atomicCompareAndSetTest() throws InterruptedException {
-        List<Integer> list = new CopyOnWriteArrayList<>();
-
+    public void compareAndSetTest() throws InterruptedException {
         Runnable updateTask = () -> {
             for (int i = 0; i < 50_000; i++) {
                 int current = atomicInt.get();
@@ -73,8 +64,9 @@ public class AtomicIntegerTest {
         System.out.println(atomicInt.get());
     }
 
+    @Ignore
     @Test
-    public void notAtomicCompareAndSetTest() throws InterruptedException {
+    public void notAtomicUpdateTest() throws InterruptedException {
         Runnable updateTask = () -> {
             for (int i = 0; i < 50_000; i++) {
                 notAtomicInt = notAtomicInt + 2;
@@ -89,4 +81,36 @@ public class AtomicIntegerTest {
         System.out.println(notAtomicInt);
     }
 
+    @Ignore
+    @Test
+    public void updateAndGetTest() throws InterruptedException {
+        Runnable updateTask = () -> {
+            for (int i = 0; i < 50_000; i++) {
+                atomicInt.updateAndGet(current -> current + 2);
+            }
+        };
+
+        new Thread(updateTask).start();
+        new Thread(updateTask).start();
+
+        Thread.sleep(5_000L);
+
+        System.out.println(atomicInt.get());
+    }
+
+    @Test
+    public void accumulateAndGetTest() throws InterruptedException {
+        Runnable updateTask = () -> {
+            for (int i = 0; i < 50_000; i++) {
+                atomicInt.accumulateAndGet(atomicInt.get(), (current, updated) -> current + 2);
+            }
+        };
+
+        new Thread(updateTask).start();
+        new Thread(updateTask).start();
+
+        Thread.sleep(5_000L);
+
+        System.out.println(atomicInt.get());
+    }
 }
