@@ -5,6 +5,7 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -29,11 +30,7 @@ public class CompletableFutureTest {
     public void futureTest() throws ExecutionException, InterruptedException {
         ExecutorService executor = Executors.newSingleThreadExecutor();
 
-        Callable<Integer> callable = () -> {
-            int generated = atomicInt.incrementAndGet();
-            Thread.sleep(3_000L);
-            return generated;
-        };
+        Callable<Integer> callable = () -> atomicInt.incrementAndGet();
 
         Future<Integer> future = executor.submit(callable);
         int num = future.get();
@@ -44,37 +41,161 @@ public class CompletableFutureTest {
 
     @Test
     public void completableFutureTest() throws ExecutionException, InterruptedException {
-        Supplier<Integer> supplier = () -> {
-            int generated = atomicInt.incrementAndGet();
-            try {
-                Thread.sleep(3_000L);
-            } catch (InterruptedException ignored) {
-            }
-            return generated;
-        };
+        Supplier<Integer> supplier = () -> atomicInt.incrementAndGet();
 
         CompletableFuture<Integer> completableFuture = CompletableFuture.supplyAsync(supplier);
-
         int doubled = completableFuture.thenApply(NumUtil::doubleNum).get();
 
         assertThat(doubled).isEqualTo(2);
     }
 
     @Test
-    public void thenAcceptTest() throws ExecutionException, InterruptedException {
+    public void getTest() throws ExecutionException, InterruptedException {
+        Supplier<Integer> supplier = () -> atomicInt.incrementAndGet();
+
+        int result = CompletableFuture.supplyAsync(supplier)
+                .get();
+
+        assertThat(result).isEqualTo(1);
+    }
+
+    @Test
+    public void getNowTest() throws ExecutionException, InterruptedException {
         Supplier<Integer> supplier = () -> {
-            int generated = atomicInt.incrementAndGet();
             try {
-                Thread.sleep(3_000L);
+                Thread.sleep(1_000L);
             } catch (InterruptedException ignored) {
             }
-            return generated;
+            return atomicInt.incrementAndGet();
         };
 
-        CompletableFuture.supplyAsync(supplier)
+        int result = CompletableFuture.supplyAsync(supplier)
+                .getNow(999);
+
+        assertThat(result).isEqualTo(999);
+    }
+
+    @Test
+    public void thenApplyTest() throws ExecutionException, InterruptedException {
+        Supplier<Integer> supplier = () -> atomicInt.incrementAndGet();
+
+        int doubled = CompletableFuture.supplyAsync(supplier)
                 .thenApply(NumUtil::doubleNum)
+                .get();
+
+        assertThat(doubled).isEqualTo(2);
+    }
+
+    @Test
+    public void thenAcceptTest() throws ExecutionException, InterruptedException {
+        Supplier<Integer> supplier = () -> atomicInt.incrementAndGet();
+
+        CompletableFuture.supplyAsync(supplier)
                 .thenAccept(System.out::println);
     }
+
+    @Test
+    public void thenRunTest() {
+        Runnable printTask = () -> System.out.println("task done : " + atomicInt.get());
+
+        CompletableFuture.supplyAsync(supplier)
+                .thenRun(printTask);
+    }
+
+    @Test
+    public void thenCombineTest() throws ExecutionException, InterruptedException {
+        Random random = new Random();
+
+        CompletableFuture<Integer> addNumFuture = CompletableFuture
+                .supplyAsync(() -> atomicInt.addAndGet(5));
+
+        CompletableFuture<Integer> randomFuture = CompletableFuture
+                .supplyAsync(() -> random.nextInt(100));
+
+        int result = addNumFuture.thenCombine(randomFuture, (add, rand) -> {
+            System.out.println("add :" + add + ", random : " + rand);
+            return add * rand;
+        }).get();
+
+        System.out.println("result : " + result);
+    }
+
+    @Test
+    public void thenAcceptBothTest() throws ExecutionException, InterruptedException {
+        Random random = new Random();
+
+        CompletableFuture<Integer> addNumFuture = CompletableFuture
+                .supplyAsync(() -> atomicInt.addAndGet(5));
+
+        CompletableFuture<Integer> randomFuture = CompletableFuture
+                .supplyAsync(() -> random.nextInt(100));
+
+        addNumFuture.thenAcceptBoth(randomFuture, (add, rand) -> {
+            System.out.println("add :" + add + ", random : " + rand);
+            System.out.println("result : " + add + rand);
+        });
+    }
+
+    @Test
+    public void runAfterBothTest() throws ExecutionException, InterruptedException {
+        CompletableFuture<Integer> addNumFuture = CompletableFuture
+                .supplyAsync(() -> atomicInt.addAndGet(5));
+
+        CompletableFuture<Integer> randomFuture = CompletableFuture
+                .supplyAsync(() -> atomicInt.addAndGet(10));
+
+        addNumFuture.runAfterBoth(randomFuture, () -> System.out.println("result : " + atomicInt.get()));
+    }
+
+    @Test
+    public void handleTest() throws ExecutionException, InterruptedException {
+        String[] strings = new String[2];
+        strings[0] = "aaa";
+        strings[1] = "bbb";
+
+        Supplier<String> supplier = () -> strings[3];
+
+        String result = CompletableFuture.supplyAsync(supplier)
+                .handle((t, error) -> {
+                    if (error != null) {
+                        System.out.println("cause : " + error);
+                        return "fallback value";
+                    } else {
+                        return t;
+                    }
+                })
+                .get();
+
+        assertThat(result).isEqualTo("fallback value");
+    }
+
+    @Test
+    public void whenCompleteTest() {
+        String[] strings = new String[2];
+        strings[0] = "aaa";
+        strings[1] = "bbb";
+
+        Supplier<String> supplier = () -> strings[3];
+
+        CompletableFuture.supplyAsync(supplier)
+                .whenComplete((t, error) -> {
+                    if (error != null) {
+                        System.out.println("cause : " + error);
+                    } else {
+                        System.out.println("result : " + t);
+                    }
+                });
+    }
+
+    Supplier<Integer> supplier = () -> {
+        int generated = atomicInt.incrementAndGet();
+        try {
+            Thread.sleep(3_000L);
+        } catch (InterruptedException ignored) {
+        }
+        return generated;
+    };
+
     @Test
     public void test() throws ExecutionException, InterruptedException {
         ExecutorService executorService = Executors.newFixedThreadPool(3);
