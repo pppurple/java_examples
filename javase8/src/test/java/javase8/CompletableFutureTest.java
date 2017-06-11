@@ -3,16 +3,10 @@ package javase8;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.Callable;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.FutureTask;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 
@@ -103,6 +97,46 @@ public class CompletableFutureTest {
     }
 
     @Test
+    public void handleTest() throws ExecutionException, InterruptedException {
+        String[] strings = new String[2];
+        strings[0] = "aaa";
+        strings[1] = "bbb";
+
+        Supplier<String> supplier = () -> strings[3];
+
+        String result = CompletableFuture.supplyAsync(supplier)
+                .handle((t, error) -> {
+                    if (error != null) {
+                        System.out.println("cause : " + error);
+                        return "fallback value";
+                    } else {
+                        return t;
+                    }
+                })
+                .get();
+
+        assertThat(result).isEqualTo("fallback value");
+    }
+
+    @Test
+    public void whenCompleteTest() {
+        String[] strings = new String[2];
+        strings[0] = "aaa";
+        strings[1] = "bbb";
+
+        Supplier<String> supplier = () -> strings[3];
+
+        CompletableFuture.supplyAsync(supplier)
+                .whenComplete((t, error) -> {
+                    if (error != null) {
+                        System.out.println("cause : " + error);
+                    } else {
+                        System.out.println("result : " + t);
+                    }
+                });
+    }
+
+    @Test
     public void thenCombineTest() throws ExecutionException, InterruptedException {
         Random random = new Random();
 
@@ -147,47 +181,66 @@ public class CompletableFutureTest {
         addNumFuture.runAfterBoth(randomFuture, () -> System.out.println("result : " + atomicInt.get()));
     }
 
+    private Random random = new Random();
+
+    private CompletableFuture<Integer> first = CompletableFuture
+            .supplyAsync(() -> {
+                int randomValue = random.nextInt(1_000);
+                System.out.println("first : " + randomValue);
+                try {
+                    Thread.sleep(randomValue);
+                } catch (InterruptedException ignored) {
+                }
+                return randomValue;
+            });
+
+    private CompletableFuture<Integer> second = CompletableFuture
+            .supplyAsync(() -> {
+                int randomValue = random.nextInt(1_000);
+                System.out.println("second : " + randomValue);
+                try {
+                    Thread.sleep(randomValue);
+                } catch (InterruptedException ignored) {
+                }
+                return randomValue;
+            });
+
+    private CompletableFuture<Integer> third = CompletableFuture
+            .supplyAsync(() -> {
+                int randomValue = random.nextInt(1_000);
+                System.out.println("third : " + randomValue);
+                try {
+                    Thread.sleep(randomValue);
+                } catch (InterruptedException ignored) {
+                }
+                return randomValue;
+            });
+
     @Test
-    public void handleTest() throws ExecutionException, InterruptedException {
-        String[] strings = new String[2];
-        strings[0] = "aaa";
-        strings[1] = "bbb";
+    public void applyToEitherTest() throws InterruptedException, ExecutionException {
+        int result = first.applyToEither(second, (done) -> {
+            System.out.println("done :" + done);
+            return done;
+        }).get();
 
-        Supplier<String> supplier = () -> strings[3];
-
-        String result = CompletableFuture.supplyAsync(supplier)
-                .handle((t, error) -> {
-                    if (error != null) {
-                        System.out.println("cause : " + error);
-                        return "fallback value";
-                    } else {
-                        return t;
-                    }
-                })
-                .get();
-
-        assertThat(result).isEqualTo("fallback value");
+        System.out.println("result : " + result);
     }
 
     @Test
-    public void whenCompleteTest() {
-        String[] strings = new String[2];
-        strings[0] = "aaa";
-        strings[1] = "bbb";
-
-        Supplier<String> supplier = () -> strings[3];
-
-        CompletableFuture.supplyAsync(supplier)
-                .whenComplete((t, error) -> {
-                    if (error != null) {
-                        System.out.println("cause : " + error);
-                    } else {
-                        System.out.println("result : " + t);
-                    }
-                });
+    public void acceptEitherTest() throws ExecutionException, InterruptedException {
+        first.acceptEither(second, (done) -> {
+            System.out.println("done :" + done);
+        });
     }
 
-    Supplier<Integer> supplier = () -> {
+    @Test
+    public void runAfterEitherTest() {
+        first.runAfterEither(second, () -> {
+            System.out.println("done!");
+        });
+    }
+
+    private Supplier<Integer> supplier = () -> {
         int generated = atomicInt.incrementAndGet();
         try {
             Thread.sleep(3_000L);
@@ -197,62 +250,37 @@ public class CompletableFutureTest {
     };
 
     @Test
-    public void test() throws ExecutionException, InterruptedException {
-        ExecutorService executorService = Executors.newFixedThreadPool(3);
+    public void allOfTest() {
+        List<CompletableFuture> futureList = Arrays.asList(first, second, third);
 
-        FutureTask<Integer> task = new FutureTask<>(() -> {
-            int generated = atomicInt.incrementAndGet();
-            Thread.sleep(3_000L);
-            return generated;
+        CompletableFuture.allOf(
+                futureList.toArray(new CompletableFuture[futureList.size()])
+        ).join();
+
+        futureList.forEach(done -> {
+                    try {
+                        System.out.println("done : " + done.get(10, TimeUnit.MILLISECONDS));
+                    } catch (InterruptedException | ExecutionException | TimeoutException e) {
+                        e.printStackTrace();
+                    }
         });
-
-        Callable<Integer> callable = new Callable<Integer>() {
-            @Override
-            public Integer call() throws Exception {
-                int generated = atomicInt.getAndIncrement();
-                Thread.sleep(3_000L);
-                return generated;
-            }
-        };
-
-        Future<Integer> future1 = executorService.submit(callable);
-        Future<Integer> future2 = executorService.submit(callable);
-        Future<Integer> future3 = executorService.submit(callable);
-
-        int num1 = future1.get();
-        int num2 = future2.get();
-        int num3 = future3.get();
-
-        System.out.println(num1 + ":" + num2 + ":" + num3);
     }
 
     @Test
-    public void joinTest() throws ExecutionException, InterruptedException {
-        ExecutorService executor= Executors.newFixedThreadPool(3);
+    public void anyOfTest() {
+        List<CompletableFuture> futureList = Arrays.asList(first, second, third);
 
-        FutureTask<Integer> task = new FutureTask<>(() -> {
-            int generated = atomicInt.incrementAndGet();
-            Thread.sleep(3_000L);
-            return generated;
-        });
+        CompletableFuture.anyOf(
+                futureList.toArray(new CompletableFuture[futureList.size()])
+        ).join();
 
-        Callable<Integer> callable = new Callable<Integer>() {
-            @Override
-            public Integer call() throws Exception {
-                int generated = atomicInt.getAndIncrement();
-                Thread.sleep(3_000L);
-                return generated;
+        futureList.forEach(done -> {
+            try {
+                System.out.println("done : " + done.get(10, TimeUnit.MILLISECONDS));
+            } catch (InterruptedException | ExecutionException | TimeoutException e) {
+                e.printStackTrace();
             }
-        };
-
-        List<CompletableFuture> futureList = new ArrayList<>();
-        for (int i = 0; i < 3; i++) {
-            futureList.add(CompletableFuture.supplyAsync(() -> atomicInt.getAndIncrement(), executor));
-        }
-
-        futureList.stream()
-                .map(CompletableFuture::join)
-                .forEach(System.out::println);
+        });
     }
 
     private static class NumUtil {
