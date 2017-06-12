@@ -8,20 +8,15 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Month;
-import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
 import java.util.Locale;
-import java.util.TimeZone;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-/**
- * Created by pppurple on 2016/09/23.
- */
 public class DateAndTimeApiTest {
 
     @Test
@@ -48,6 +43,7 @@ public class DateAndTimeApiTest {
         LocalDateTime dateTime = LocalDateTime.of(2016, 9, 25, 12, 55, 10);
         assertThat(dateTime.toString()).isEqualTo("2016-09-25T12:55:10");
 
+        // 年月日 時分秒 (列挙型Month)
         LocalDateTime dateTime2 = LocalDateTime.of(2016, Month.SEPTEMBER, 25, 12, 55, 10);
         assertThat(dateTime2.toString()).isEqualTo("2016-09-25T12:55:10");
 
@@ -55,6 +51,7 @@ public class DateAndTimeApiTest {
         LocalDateTime dateTime3 = LocalDateTime.of(2016, 9, 25, 12, 55);
         assertThat(dateTime3.toString()).isEqualTo("2016-09-25T12:55");
 
+        // 年月日 時分 (列挙型Month)
         LocalDateTime dateTime4 = LocalDateTime.of(2016, Month.SEPTEMBER, 25, 12, 55);
         assertThat(dateTime4.toString()).isEqualTo("2016-09-25T12:55");
 
@@ -62,6 +59,7 @@ public class DateAndTimeApiTest {
         LocalDateTime dateTime5 = LocalDateTime.of(2016, 9, 25, 12, 55, 10, 123_456_789);
         assertThat(dateTime5.toString()).isEqualTo("2016-09-25T12:55:10.123456789");
 
+        // 年月日 時分秒ナノ秒 (列挙型Month)
         LocalDateTime dateTime6 = LocalDateTime.of(2016, Month.SEPTEMBER, 25, 12, 55, 10, 123_456_789);
         assertThat(dateTime6.toString()).isEqualTo("2016-09-25T12:55:10.123456789");
 
@@ -328,43 +326,52 @@ public class DateAndTimeApiTest {
         // 翌月の最初の日
         // 例）2016年10月の最初の日
         LocalDateTime firstDayOfNextMonth = dateTime.with(TemporalAdjusters.firstDayOfNextMonth());
-        //assertThat(firstDayOfNextMonth.getDayOfMonth()).isEqualTo(1);
+        assertThat(firstDayOfNextMonth.getDayOfMonth()).isEqualTo(1);
 
         // 翌年の最初の日
         // 例）2017年の最初の日
         LocalDateTime firstDayOfYear = dateTime.with(TemporalAdjusters.firstDayOfNextYear());
+        assertThat(firstDayOfYear.getDayOfMonth()).isEqualTo(1);
 
         // 月の中で指定した曜日の一番早い日
         // 例）2016年9月で最初の金曜日
         LocalDateTime firstInMonth = dateTime.with(TemporalAdjusters.firstInMonth(DayOfWeek.FRIDAY));
+        assertThat(firstInMonth.getDayOfMonth()).isEqualTo(2);
 
         // 月末日
         // 例）2016年9月の最後の日
         LocalDateTime lastDayOfMonth = dateTime.with(TemporalAdjusters.lastDayOfMonth());
+        assertThat(lastDayOfMonth.getDayOfMonth()).isEqualTo(30);
 
         // 年末日
         // 例）2016年の最後の日
         LocalDateTime lastDayOfYear = dateTime.with(TemporalAdjusters.lastDayOfYear());
+        assertThat(lastDayOfYear.getDayOfMonth()).isEqualTo(31);
 
         // 月の中で指定した曜日の一番遅い日
         // 例）2016年9月で最後の金曜日
         LocalDateTime lastInMonth = dateTime.with(TemporalAdjusters.lastInMonth(DayOfWeek.FRIDAY));
+        assertThat(lastInMonth.getDayOfMonth()).isEqualTo(30);
 
         // 指定した曜日が次に出てくる最初の日
-        // 例）2016年9月25日以降で一番最初の金曜日
-        LocalDateTime next = dateTime.with(TemporalAdjusters.next(DayOfWeek.FRIDAY));
+        // 例）2016年9月25日以降で一番最初の土曜日
+        LocalDateTime next = dateTime.with(TemporalAdjusters.next(DayOfWeek.SUNDAY));
+        assertThat(next.getDayOfMonth()).isEqualTo(2);
 
         // 指定した曜日が次に出てくる最初の日(ただし同じ曜日の場合、その日を返す)
-        // 例）2016年9月25日以降で一番最初の金曜日
-        LocalDateTime nextOrSame = dateTime.with(TemporalAdjusters.nextOrSame(DayOfWeek.FRIDAY));
+        // 例）2016年9月25日以降で一番最初の土曜日
+        LocalDateTime nextOrSame = dateTime.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
+        assertThat(nextOrSame.getDayOfMonth()).isEqualTo(25);
 
         // 指定した曜日が前に出てくる最初の日
         // 例）2016年9月25日以前で一番最初の金曜日
-        LocalDateTime previous = dateTime.with(TemporalAdjusters.previous(DayOfWeek.FRIDAY));
+        LocalDateTime previous = dateTime.with(TemporalAdjusters.previous(DayOfWeek.SUNDAY));
+        assertThat(previous.getDayOfMonth()).isEqualTo(18);
 
         // 指定した曜日が前に出てくる最初の日(ただし同じ曜日の場合、その日を返す)
         // 例）2016年9月25日以前で一番最初の金曜日
-        LocalDateTime previousOrSame = dateTime.with(TemporalAdjusters.previousOrSame(DayOfWeek.FRIDAY));
+        LocalDateTime previousOrSame = dateTime.with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY));
+        assertThat(previousOrSame.getDayOfMonth()).isEqualTo(25);
     }
 
     @Test
@@ -394,68 +401,94 @@ public class DateAndTimeApiTest {
 
         // 日の加算
         LocalDateTime plusDays = dateTime.plusDays(1L);
+        assertThat(plusDays.getDayOfMonth()).isEqualTo(26);
 
         LocalDateTime plusDays2 = dateTime.plus(1L, ChronoUnit.DAYS);
+        assertThat(plusDays2.getDayOfMonth()).isEqualTo(26);
 
         // 時の加算
         LocalDateTime plusHours = dateTime.plusHours(1L);
+        assertThat(plusHours.getHour()).isEqualTo(21);
 
         LocalDateTime plusHours2 = dateTime.plus(1L, ChronoUnit.HOURS);
+        assertThat(plusHours2.getHour()).isEqualTo(21);
 
         // 分の加算
         LocalDateTime plusMinutes = dateTime.plusMinutes(1L);
+        assertThat(plusMinutes.getMinute()).isEqualTo(56);
 
         LocalDateTime plusMinutes2 = dateTime.plus(1L, ChronoUnit.MINUTES);
+        assertThat(plusMinutes2.getMinute()).isEqualTo(56);
 
         // 秒の加算
         LocalDateTime plusSeconds = dateTime.plusSeconds(1L);
+        assertThat(plusSeconds.getSecond()).isEqualTo(11);
 
         LocalDateTime plusSeconds2 = dateTime.plus(1L, ChronoUnit.SECONDS);
+        assertThat(plusSeconds2.getSecond()).isEqualTo(11);
 
         // ナノ秒の加算
         LocalDateTime plusNanos = dateTime.plusNanos(1L);
+        assertThat(plusNanos.getNano()).isEqualTo(123456790);
 
         LocalDateTime plusNanos2 = dateTime.plus(1L, ChronoUnit.NANOS);
+        assertThat(plusNanos2.getNano()).isEqualTo(123456790);
 
         // 年の減算
         LocalDateTime minusYears = dateTime.minusYears(1L);
+        assertThat(minusYears.getYear()).isEqualTo(2015);
 
         LocalDateTime minusYears2 = dateTime.minus(1L, ChronoUnit.YEARS);
+        assertThat(minusYears2.getYear()).isEqualTo(2015);
 
         // 月の減算
         LocalDateTime minusMonths = dateTime.minusMonths(1L);
+        assertThat(minusMonths.getMonth()).isEqualTo(Month.AUGUST);
 
         LocalDateTime minusMonths2 = dateTime.minus(1L, ChronoUnit.MONTHS);
+        assertThat(minusMonths2.getMonth()).isEqualTo(Month.AUGUST);
 
         // 週の減算
         LocalDateTime minusWeeks = dateTime.minusWeeks(1L);
+        assertThat(minusWeeks.getDayOfMonth()).isEqualTo(18);
 
         LocalDateTime minusWeeks2 = dateTime.minus(1L, ChronoUnit.WEEKS);
+        assertThat(minusWeeks2.getDayOfMonth()).isEqualTo(18);
 
         // 日の減算
         LocalDateTime minusDays = dateTime.minusDays(1L);
+        assertThat(minusDays.getDayOfMonth()).isEqualTo(24);
 
         LocalDateTime minusDays2 = dateTime.minus(1L, ChronoUnit.DAYS);
+        assertThat(minusDays2.getDayOfMonth()).isEqualTo(24);
 
         // 時の減算
         LocalDateTime minusHours = dateTime.minusHours(1L);
+        assertThat(minusHours.getHour()).isEqualTo(19);
 
         LocalDateTime minusHours2 = dateTime.minus(1L, ChronoUnit.HOURS);
+        assertThat(minusHours2.getHour()).isEqualTo(19);
 
         // 分の減算
         LocalDateTime minusMinutes = dateTime.minusMinutes(1L);
+        assertThat(minusMinutes.getMinute()).isEqualTo(54);
 
         LocalDateTime minusMinutes2 = dateTime.minus(1L, ChronoUnit.MINUTES);
+        assertThat(minusMinutes2.getMinute()).isEqualTo(54);
 
         // 秒の減算
         LocalDateTime minusSeconds = dateTime.minusSeconds(1L);
+        assertThat(minusSeconds.getSecond()).isEqualTo(9);
 
         LocalDateTime minusSeconds2 = dateTime.minus(1L, ChronoUnit.SECONDS);
+        assertThat(minusSeconds2.getSecond()).isEqualTo(9);
 
         // ナノ秒の減算
         LocalDateTime minusNanos = dateTime.minusNanos(1L);
+        assertThat(minusNanos.getNano()).isEqualTo(123456788);
 
         LocalDateTime minusNanos2 = dateTime.minus(1L, ChronoUnit.NANOS);
+        assertThat(minusNanos2.getNano()).isEqualTo(123456788);
     }
 
     @Test
