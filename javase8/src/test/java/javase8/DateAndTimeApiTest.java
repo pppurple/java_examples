@@ -10,6 +10,7 @@ import java.time.LocalTime;
 import java.time.Month;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
@@ -32,9 +33,13 @@ public class DateAndTimeApiTest {
         LocalDateTime nowNewYork = LocalDateTime.now(ZoneId.of("America/New_York"));
         System.out.println(nowNewYork);
 
-        // 現在時刻(システム)
+        // 現在時刻(デフォルトタイムゾーンのシステムクロック)
         LocalDateTime nowSystem = LocalDateTime.now(Clock.systemDefaultZone());
         System.out.println(nowSystem);
+
+        // 現在時刻(UTCタイムゾーンのシステムクロック)
+        LocalDateTime nowUtc = LocalDateTime.now(Clock.systemUTC());
+        System.out.println(nowUtc);
     }
 
     @Test
@@ -72,23 +77,31 @@ public class DateAndTimeApiTest {
 
     @Test
     public void from() {
+        // LocalDateTimeから取得
         LocalDateTime from = LocalDateTime.of(2016, 9, 25, 12, 55, 10);
         LocalDateTime to = LocalDateTime.from(from);
         assertThat(to.toString()).isEqualTo("2016-09-25T12:55:10");
 
+        // LocalDateから取得
         LocalDate fromDate = LocalDate.of(2016, 9, 25);
         LocalDate toDate = LocalDate.from(fromDate);
         assertThat(toDate.toString()).isEqualTo("2016-09-25");
 
+        // LocalTimeから取得
         LocalTime fromTime = LocalTime.of(12, 55, 10);
         LocalTime toTime = LocalTime.from(fromTime);
         assertThat(toTime.toString()).isEqualTo("12:55:10");
     }
 
     @Test
-    public void format() {
+    public void parse() {
+        // DateTimeFormatter.ISO_LOCAL_DATE_TIME
         LocalDateTime dateTime = LocalDateTime.parse("2016-09-25T12:55:10");
         System.out.println(dateTime);
+
+        // DateTimeFormatter.ISO_OFFSET_DATE_TIME
+        LocalDateTime basicIso = LocalDateTime.parse("2016-09-25T12:55:10+09:00", DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+        System.out.println(basicIso);
     }
 
     @Test
