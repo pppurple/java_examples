@@ -10,11 +10,9 @@ import java.time.LocalTime;
 import java.time.Month;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
 import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
-import java.util.Locale;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -517,20 +515,5 @@ public class DateAndTimeApiTest {
         // isEqual
         LocalDateTime dateTime3 = dateTime1.plusSeconds(1L);
         assertThat(dateTime2.isEqual(dateTime3)).isEqualTo(true);
-    }
-
-    @Test
-    public void DateTimeToDate() {
-        // Datetime → Date
-//        OffsetDateTime dateTime1 = OffsetDateTime.of(2016, 9, 25, 20, 55, 10, );
-
-    }
-
-    @Test
-    public void temmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmp() {
-        LocalDateTime now = LocalDateTime.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEE, dd MMM yyyy HH:mm:ss", Locale.US);
-        String date = now.format(formatter) + " GMT";
-        System.out.println(date);
     }
 }
