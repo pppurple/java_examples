@@ -14,6 +14,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class CompletableFutureTest {
     private static AtomicInteger atomicInt;
+    private static Random random = new Random();
 
     @Before
     public void before() {
@@ -44,7 +45,7 @@ public class CompletableFutureTest {
     }
 
     @Test
-    public void getTest() throws ExecutionException, InterruptedException {
+    public void supplyAsyncTest() throws ExecutionException, InterruptedException {
         Supplier<Integer> supplier = () -> atomicInt.incrementAndGet();
 
         int result = CompletableFuture.supplyAsync(supplier)
@@ -90,6 +91,15 @@ public class CompletableFutureTest {
 
     @Test
     public void thenRunTest() {
+        Supplier<Integer> supplier = () -> {
+            int generated = atomicInt.incrementAndGet();
+            try {
+                Thread.sleep(3_000L);
+            } catch (InterruptedException ignored) {
+            }
+            return generated;
+        };
+
         Runnable printTask = () -> System.out.println("task done : " + atomicInt.get());
 
         CompletableFuture.supplyAsync(supplier)
@@ -181,8 +191,6 @@ public class CompletableFutureTest {
         addNumFuture.runAfterBoth(randomFuture, () -> System.out.println("result : " + atomicInt.get()));
     }
 
-    private Random random = new Random();
-
     private CompletableFuture<Integer> first = CompletableFuture
             .supplyAsync(() -> {
                 int randomValue = random.nextInt(1_000);
@@ -239,15 +247,6 @@ public class CompletableFutureTest {
             System.out.println("done!");
         });
     }
-
-    private Supplier<Integer> supplier = () -> {
-        int generated = atomicInt.incrementAndGet();
-        try {
-            Thread.sleep(3_000L);
-        } catch (InterruptedException ignored) {
-        }
-        return generated;
-    };
 
     @Test
     public void allOfTest() {
