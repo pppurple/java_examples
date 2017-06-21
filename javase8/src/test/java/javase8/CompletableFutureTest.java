@@ -38,8 +38,9 @@ public class CompletableFutureTest {
     public void completableFutureTest() throws ExecutionException, InterruptedException {
         Supplier<Integer> supplier = () -> atomicInt.incrementAndGet();
 
-        CompletableFuture<Integer> completableFuture = CompletableFuture.supplyAsync(supplier);
-        int doubled = completableFuture.thenApply(NumUtil::doubleNum).get();
+        int doubled = CompletableFuture.supplyAsync(supplier)
+                .thenApply(NumUtil::doubleNum)
+                .get();
 
         assertThat(doubled).isEqualTo(2);
     }
