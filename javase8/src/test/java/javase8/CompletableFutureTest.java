@@ -191,41 +191,41 @@ public class CompletableFutureTest {
         addNumFuture.runAfterBoth(randomFuture, () -> System.out.println("result : " + atomicInt.get()));
     }
 
-    private CompletableFuture<Integer> first = CompletableFuture
-            .supplyAsync(() -> {
-                int randomValue = random.nextInt(1_000);
-                System.out.println("first : " + randomValue);
-                try {
-                    Thread.sleep(randomValue);
-                } catch (InterruptedException ignored) {
-                }
-                return randomValue;
-            });
+    private Supplier<Integer> firstTask = () -> {
+        int randomValue = random.nextInt(1_000);
+        System.out.println("first : " + randomValue);
+        try {
+            Thread.sleep(randomValue);
+        } catch (InterruptedException ignored) {
+        }
+        return randomValue;
+    };
 
-    private CompletableFuture<Integer> second = CompletableFuture
-            .supplyAsync(() -> {
-                int randomValue = random.nextInt(1_000);
-                System.out.println("second : " + randomValue);
-                try {
-                    Thread.sleep(randomValue);
-                } catch (InterruptedException ignored) {
-                }
-                return randomValue;
-            });
+    private Supplier<Integer> secondTask = () -> {
+        int randomValue = random.nextInt(1_000);
+        System.out.println("second : " + randomValue);
+        try {
+            Thread.sleep(randomValue);
+        } catch (InterruptedException ignored) {
+        }
+        return randomValue;
+    };
 
-    private CompletableFuture<Integer> third = CompletableFuture
-            .supplyAsync(() -> {
-                int randomValue = random.nextInt(1_000);
-                System.out.println("third : " + randomValue);
-                try {
-                    Thread.sleep(randomValue);
-                } catch (InterruptedException ignored) {
-                }
-                return randomValue;
-            });
+    private Supplier<Integer> thirdTask = () -> {
+        int randomValue = random.nextInt(1_000);
+        System.out.println("third : " + randomValue);
+        try {
+            Thread.sleep(randomValue);
+        } catch (InterruptedException ignored) {
+        }
+        return randomValue;
+    };
 
     @Test
     public void applyToEitherTest() throws InterruptedException, ExecutionException {
+        CompletableFuture<Integer> first  = CompletableFuture.supplyAsync(firstTask);
+        CompletableFuture<Integer> second = CompletableFuture.supplyAsync(secondTask);
+
         int result = first.applyToEither(second, (done) -> {
             System.out.println("done :" + done);
             return done;
@@ -236,6 +236,9 @@ public class CompletableFutureTest {
 
     @Test
     public void acceptEitherTest() throws ExecutionException, InterruptedException {
+        CompletableFuture<Integer> first  = CompletableFuture.supplyAsync(firstTask);
+        CompletableFuture<Integer> second = CompletableFuture.supplyAsync(secondTask);
+
         first.acceptEither(second, (done) -> {
             System.out.println("done :" + done);
         });
@@ -243,6 +246,9 @@ public class CompletableFutureTest {
 
     @Test
     public void runAfterEitherTest() {
+        CompletableFuture<Integer> first  = CompletableFuture.supplyAsync(firstTask);
+        CompletableFuture<Integer> second = CompletableFuture.supplyAsync(secondTask);
+
         first.runAfterEither(second, () -> {
             System.out.println("done!");
         });
@@ -250,6 +256,9 @@ public class CompletableFutureTest {
 
     @Test
     public void allOfTest() {
+        CompletableFuture<Integer> first  = CompletableFuture.supplyAsync(firstTask);
+        CompletableFuture<Integer> second = CompletableFuture.supplyAsync(secondTask);
+        CompletableFuture<Integer> third  = CompletableFuture.supplyAsync(thirdTask);
         List<CompletableFuture> futureList = Arrays.asList(first, second, third);
 
         CompletableFuture.allOf(
@@ -267,6 +276,9 @@ public class CompletableFutureTest {
 
     @Test
     public void anyOfTest() {
+        CompletableFuture<Integer> first  = CompletableFuture.supplyAsync(firstTask);
+        CompletableFuture<Integer> second = CompletableFuture.supplyAsync(secondTask);
+        CompletableFuture<Integer> third  = CompletableFuture.supplyAsync(thirdTask);
         List<CompletableFuture> futureList = Arrays.asList(first, second, third);
 
         CompletableFuture.anyOf(
