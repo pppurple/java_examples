@@ -274,8 +274,8 @@ public class CompletableFutureTest {
 
         futureList.forEach(done -> {
                     try {
-                        System.out.println("done : " + done.get(10, TimeUnit.MILLISECONDS));
-                    } catch (InterruptedException | ExecutionException | TimeoutException e) {
+                        System.out.println("done : " + done.get());
+                    } catch (InterruptedException | ExecutionException e) {
                         e.printStackTrace();
                     }
         });
@@ -292,11 +292,15 @@ public class CompletableFutureTest {
                 futureList.toArray(new CompletableFuture[futureList.size()])
         ).join();
 
-        futureList.forEach(done -> {
-            try {
-                System.out.println("done : " + done.get(10, TimeUnit.MILLISECONDS));
-            } catch (InterruptedException | ExecutionException | TimeoutException e) {
-                e.printStackTrace();
+        futureList.forEach(mayDone -> {
+            if (mayDone.isDone()) {
+                try {
+                    System.out.println("done : " + mayDone.get());
+                } catch (InterruptedException | ExecutionException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                System.out.println("This future has not done yet.");
             }
         });
     }
