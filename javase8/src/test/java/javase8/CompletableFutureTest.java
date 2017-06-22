@@ -193,32 +193,32 @@ public class CompletableFutureTest {
     }
 
     private Supplier<Integer> firstTask = () -> {
-        int randomValue = random.nextInt(1_000);
-        System.out.println("first : " + randomValue);
+        int randomValue = random.nextInt(2_000);
         try {
             Thread.sleep(randomValue);
         } catch (InterruptedException ignored) {
         }
+        System.out.println("first : " + randomValue);
         return randomValue;
     };
 
     private Supplier<Integer> secondTask = () -> {
-        int randomValue = random.nextInt(1_000);
-        System.out.println("second : " + randomValue);
+        int randomValue = random.nextInt(2_000);
         try {
             Thread.sleep(randomValue);
         } catch (InterruptedException ignored) {
         }
+        System.out.println("second : " + randomValue);
         return randomValue;
     };
 
     private Supplier<Integer> thirdTask = () -> {
-        int randomValue = random.nextInt(1_000);
-        System.out.println("third : " + randomValue);
+        int randomValue = random.nextInt(2_000);
         try {
             Thread.sleep(randomValue);
         } catch (InterruptedException ignored) {
         }
+        System.out.println("third : " + randomValue);
         return randomValue;
     };
 
@@ -233,6 +233,8 @@ public class CompletableFutureTest {
         }).get();
 
         System.out.println("result : " + result);
+
+        Thread.sleep(2_000);
     }
 
     @Test
@@ -243,16 +245,20 @@ public class CompletableFutureTest {
         first.acceptEither(second, (done) -> {
             System.out.println("done :" + done);
         });
+
+        Thread.sleep(2_000);
     }
 
     @Test
-    public void runAfterEitherTest() {
+    public void runAfterEitherTest() throws InterruptedException {
         CompletableFuture<Integer> first  = CompletableFuture.supplyAsync(firstTask);
         CompletableFuture<Integer> second = CompletableFuture.supplyAsync(secondTask);
 
         first.runAfterEither(second, () -> {
             System.out.println("done!");
         });
+
+        Thread.sleep(2_000);
     }
 
     @Test
