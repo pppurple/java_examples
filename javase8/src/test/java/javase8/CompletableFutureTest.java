@@ -177,7 +177,7 @@ public class CompletableFutureTest {
 
         addNumFuture.thenAcceptBoth(randomFuture, (add, rand) -> {
             System.out.println("add :" + add + ", random : " + rand);
-            System.out.println("result : " + add + rand);
+            System.out.println("result : " + (add + rand));
         });
     }
 
