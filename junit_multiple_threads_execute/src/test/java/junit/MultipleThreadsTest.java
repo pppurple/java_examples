@@ -8,10 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.function.Function;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -40,7 +37,28 @@ public class MultipleThreadsTest {
     }
 
     @Test
-    public void concurrentTest() throws InterruptedException {
+    public void useExecutorTest() throws InterruptedException {
+        ExecutorService executorService = Executors.newFixedThreadPool(10);
+
+        List<Callable<Void>> tasks = new ArrayList<>();
+        try {
+            countries.forEach(country -> {
+                languages.forEach(lang -> {
+                    Callable<Void> task = () -> {
+                        assertThat(targetTest(country, lang)).isTrue();
+                        return null;
+                    };
+                    tasks.add(task);
+                });
+            });
+            executorService.invokeAll(tasks);
+        } finally {
+            executorService.shutdown();
+        }
+    }
+
+    @Test
+    public void concurrentTest() throws Exception {
         List<ArgsExpectedPair<Locale, Boolean>> pairs = new ArrayList<>();
         countries.forEach(country -> {
             languages.forEach(lang -> {
@@ -53,14 +71,14 @@ public class MultipleThreadsTest {
             return targetTest(locale.country, locale.getLanguage());
         };
 
-        testConcurrent(targetTestWrapper, pairs, 10, 100);
+        testConcurrent2(targetTestWrapper, pairs, 10, 10);
     }
 
     // テスト対象メソッド
     // target test method
     private boolean targetTest(String country, String language) {
         try {
-            // dummy heavy test
+            // dummy heavy task
             Thread.sleep(50L);
         } catch (InterruptedException e) {
             e.printStackTrace();
@@ -69,7 +87,21 @@ public class MultipleThreadsTest {
 
 /*        if (country.equals("JP") && language.equals("be")) {
             return false;
+        }
+        if (country.equals("AI") && language.equals("bs")) {
+            return false;
+        }
+        if (country.equals("IQ") && language.equals("en")) {
+            return false;
         }*/
+        if (country.equals("UZ")) {
+            return false;
+        }
+
+/*        if (country.equals("WF") && language.equals("co")) {
+            throw new RuntimeException();
+        }*/
+
         return true;
     }
 
@@ -87,29 +119,25 @@ public class MultipleThreadsTest {
         private B expected;
     }
 
-    public static void testConcurrent(final Function<Locale, Boolean> targetTest, final List<ArgsExpectedPair<Locale , Boolean>> pairs,
-                                      final int threadPoolSize, final int maxTimeoutSeconds) throws InterruptedException {
+    public static <T, U> void testConcurrent2(final Function<T, U> targetTest, final List<ArgsExpectedPair<T, U>> pairs,
+                                       final int threadPoolSize, final int maxTimeoutSeconds) throws InterruptedException {
         final List<Throwable> exceptions = Collections.synchronizedList(new ArrayList<Throwable>());
-        final List<Boolean> testFails = Collections.synchronizedList(new ArrayList<>());
+        final List<ArgsExpectedPair<T, U>> testFails = Collections.synchronizedList(new ArrayList<>());
         final ExecutorService threadPool = Executors.newFixedThreadPool(threadPoolSize);
         try {
-            final CountDownLatch allExecutorThreadsReady = new CountDownLatch(threadPoolSize);
-            final CountDownLatch afterInitBlocker = new CountDownLatch(1);
             final CountDownLatch allDone = new CountDownLatch(pairs.size());
-            for (final ArgsExpectedPair<Locale, Boolean> pair : pairs) {
-                Locale args = pair.getArgs();
-                Boolean expected = pair.getExpected();
+            for (final ArgsExpectedPair<T, U> pair : pairs) {
+                T args = pair.getArgs();
+                U expected = pair.getExpected();
                 Runnable task = () -> {
-                    Boolean result = targetTest.apply(args);
+                    U result = targetTest.apply(args);
                     if (!expected.equals(result)) {
-                        testFails.add(false);
+                        testFails.add(pair);
                     }
                 };
 
                 threadPool.submit(() -> {
-                    allExecutorThreadsReady.countDown();
                     try {
-                        afterInitBlocker.await();
                         task.run();
                     } catch (final Throwable e) {
                         exceptions.add(e);
@@ -119,12 +147,7 @@ public class MultipleThreadsTest {
                 });
             }
 
-            // wait until all threads are ready
-            assertTrue("Timeout initializing threads! Perform long lasting initializations before passing runnables to assertConcurrent",
-                    allExecutorThreadsReady.await(pairs.size() * 10, TimeUnit.MILLISECONDS));
-            // start all test runners
-            afterInitBlocker.countDown();
-            assertTrue(" timeout! More than" + maxTimeoutSeconds + "seconds", allDone.await(maxTimeoutSeconds, TimeUnit.SECONDS));
+            assertTrue(" timeout! More than " + maxTimeoutSeconds + "seconds", allDone.await(maxTimeoutSeconds, TimeUnit.SECONDS));
         } finally {
             threadPool.shutdownNow();
         }
