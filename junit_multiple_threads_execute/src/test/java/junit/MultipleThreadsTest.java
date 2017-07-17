@@ -71,7 +71,7 @@ public class MultipleThreadsTest {
             return targetTest(locale.country, locale.getLanguage());
         };
 
-        testConcurrent2(targetTestWrapper, pairs, 10, 10);
+        testConcurrent(targetTestWrapper, pairs, 10, 10);
     }
 
     // テスト対象メソッド
@@ -84,23 +84,6 @@ public class MultipleThreadsTest {
             e.printStackTrace();
         }
         System.out.println("test: country=" + country + " lang=" + language);
-
-/*        if (country.equals("JP") && language.equals("be")) {
-            return false;
-        }
-        if (country.equals("AI") && language.equals("bs")) {
-            return false;
-        }
-        if (country.equals("IQ") && language.equals("en")) {
-            return false;
-        }*/
-        if (country.equals("UZ")) {
-            return false;
-        }
-
-/*        if (country.equals("WF") && language.equals("co")) {
-            throw new RuntimeException();
-        }*/
 
         return true;
     }
@@ -119,7 +102,7 @@ public class MultipleThreadsTest {
         private B expected;
     }
 
-    public static <T, U> void testConcurrent2(final Function<T, U> targetTest, final List<ArgsExpectedPair<T, U>> pairs,
+    public static <T, U> void testConcurrent(final Function<T, U> targetTest, final List<ArgsExpectedPair<T, U>> pairs,
                                        final int threadPoolSize, final int maxTimeoutSeconds) throws InterruptedException {
         final List<Throwable> exceptions = Collections.synchronizedList(new ArrayList<Throwable>());
         final List<ArgsExpectedPair<T, U>> testFails = Collections.synchronizedList(new ArrayList<>());
