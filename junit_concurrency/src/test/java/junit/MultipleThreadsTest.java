@@ -104,8 +104,11 @@ public class MultipleThreadsTest {
 
     public static <T, U> void testConcurrent(final Function<T, U> targetTest, final List<ArgsExpectedPair<T, U>> pairs,
                                        final int threadPoolSize, final int maxTimeoutSeconds) throws InterruptedException {
-        final List<Throwable> exceptions = Collections.synchronizedList(new ArrayList<Throwable>());
+        // failed test cases
         final List<ArgsExpectedPair<T, U>> testFails = Collections.synchronizedList(new ArrayList<>());
+        // failed with an exception test cases
+        final List<Throwable> exceptions = Collections.synchronizedList(new ArrayList<Throwable>());
+
         final ExecutorService threadPool = Executors.newFixedThreadPool(threadPoolSize);
         try {
             final CountDownLatch allDone = new CountDownLatch(pairs.size());
@@ -130,11 +133,12 @@ public class MultipleThreadsTest {
                 });
             }
 
-            assertTrue(" timeout! More than " + maxTimeoutSeconds + "seconds", allDone.await(maxTimeoutSeconds, TimeUnit.SECONDS));
+            assertThat(allDone.await(maxTimeoutSeconds, TimeUnit.SECONDS))
+                    .as(" timeout! More than " + maxTimeoutSeconds + "seconds.").isTrue();
         } finally {
             threadPool.shutdownNow();
         }
-        assertThat(testFails).as("test failed").isEmpty();
-        assertThat(exceptions).as("failed with exception(s)" + exceptions).isEmpty();
+        assertThat(testFails).as("test failed.").isEmpty();
+        assertThat(exceptions).as("failed with exception(s)." + exceptions).isEmpty();
     }
 }
