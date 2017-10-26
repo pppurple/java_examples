@@ -246,26 +246,31 @@ public class JedisExampleMainTest {
         // zrangeByScore()で第2引数と第3引数の間のスコアを持つ要素を返す。
         // zrangeByScoreWithScores()でスコアも同時に返す。
         System.out.println(jedis.zrangeByScore("my_zset", 0, 150));
-        System.out.println(jedis.zrangeByScoreWithScores("my_zset", 0, 150));
-        System.out.println(jedis.zrangeByScoreWithScores("my_zset", 100, 230));
+        jedis.zrangeByScoreWithScores("my_zset", 0, 150)
+                .forEach(t -> System.out.println(t.getElement() + " : " + t.getScore()));
+        jedis.zrangeByScoreWithScores("my_zset", 100, 230)
+                .forEach(t -> System.out.println(t.getElement() + " : " + t.getScore()));
 
         // redis-cliだと、第2引数と第3引数には無限大(+inf/-inf)を指定することが可能だが、
         // jedisではDouble.MIN_VALUE/MAX_VALUEを使用する
-        System.out.println(jedis.zrangeByScore("my_zset", Double.MIN_VALUE, 100));
+        System.out.println(jedis.zrangeByScore("my_zset", Double.MIN_VALUE, 200));
         System.out.println(jedis.zrangeByScore("my_zset", 200, Double.MAX_VALUE));
 
         // zrem()
         // 指定されたメンバを削除する。
-        System.out.println(jedis.zrangeWithScores("my_zset", 0, -1));
+        System.out.println(jedis.zrange("my_zset", 0, -1));
         jedis.zrem("my_zset", "member1");
-        System.out.println(jedis.zrangeWithScores("my_zset", 0, -1));
+        System.out.println(jedis.zrange("my_zset", 0, -1));
 
         // zremrangeByScore()
         // 第1引数と第2引数の間のスコアを持つ要素を削除する。
         jedis.del("my_zset");
         jedis.zadd("my_zset", map);
+        jedis.zrangeWithScores("my_zset", 0, -1)
+                .forEach(t -> System.out.println(t.getElement() + " : " + t.getScore()));
         jedis.zremrangeByScore("my_zset", 200, 400);
-        System.out.println(jedis.zrangeWithScores("my_zset", 0, -1));
+        jedis.zrangeWithScores("my_zset", 0, -1)
+                .forEach(t -> System.out.println(t.getElement() + " : " + t.getScore()));
     }
 
     @Test
