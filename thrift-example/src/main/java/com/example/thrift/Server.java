@@ -18,11 +18,15 @@ public class Server {
                 @Override
                 public List<Person> searchByName(String query) {
 
+                    System.out.println("query: " + query);
+
                     // search by query
                     // PeopleDao.search(query)
-                    Person alice = new Person("Alice", 33, Country.findByValue(1), "trick");
-                    Person bobby = new Person("Bobby", 29, Country.findByValue(0), "yo-yo");
+                    Person alice = new Person("Alice Wall", 33, Country.findByValue(1), "trick");
+                    Person bobby = new Person("Bobby Wall", 29, Country.findByValue(0), "yo-yo");
                     List<Person> people = Arrays.asList(alice, bobby);
+
+                    people.forEach(System.out::println);
 
                     return people;
                 }
