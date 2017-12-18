@@ -37,9 +37,8 @@ public class Server {
 
                 Person alice = new Person("Alice", 33, Country.findByValue(1), "trick");
                 Person bobby = new Person("Bobby", 29, Country.findByValue(0), "yo-yo");
-                List<Person> people = Arrays.asList(alice, bobby);
 
-                return people;
+                return Arrays.asList(alice, bobby);
             });
             */
 
