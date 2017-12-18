@@ -20,8 +20,7 @@ public class Server {
 
                     System.out.println("query: " + query);
 
-                    // search by query
-                    // PeopleDao.search(query)
+                    // dummy response.(emulate search by query from DB)
                     Person alice = new Person("Alice Wall", 33, Country.findByValue(1), "trick");
                     Person bobby = new Person("Bobby Wall", 29, Country.findByValue(0), "yo-yo");
                     List<Person> people = Arrays.asList(alice, bobby);
@@ -36,8 +35,6 @@ public class Server {
             /*
             Processor<PeopleService.Iface> processor = new Processor<>(query -> {
 
-                // search by query
-                // PeopleDao.search(query)
                 Person alice = new Person("Alice", 33, Country.findByValue(1), "trick");
                 Person bobby = new Person("Bobby", 29, Country.findByValue(0), "yo-yo");
                 List<Person> people = Arrays.asList(alice, bobby);
