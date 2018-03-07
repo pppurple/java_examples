@@ -1,3 +1,5 @@
+*.class
+
 # Idea
 .idea
 *.iml
