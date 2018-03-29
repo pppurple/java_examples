@@ -54,10 +54,8 @@ public class MyServiceClient {
         }
 
         // 結果を出力
+        System.out.println("[response]");
         response.getPeopleList()
-                .forEach(p -> {
-                    System.out.println("[response]");
-                    System.out.println(p);
-                });
+                .forEach(System.out::println);
     }
 }
