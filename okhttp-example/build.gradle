@@ -1,0 +1,17 @@
+group 'com.example.okhttp'
+version '1.0-SNAPSHOT'
+
+apply plugin: 'java'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile('com.squareup.okhttp3:okhttp:3.10.0')
+    compile('com.squareup.okhttp3:logging-interceptor:3.10.0')
+    testCompile('junit:junit:4.12')
+    testCompile('org.assertj:assertj-core:3.10.0')
+}
