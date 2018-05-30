@@ -3,6 +3,7 @@ package com.example.okhttp;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import okhttp3.*;
 import okhttp3.logging.HttpLoggingInterceptor;
 import okhttp3.logging.HttpLoggingInterceptor.Level;
@@ -39,7 +40,6 @@ public class MainTest {
         OkHttpClient okHttpClient = new OkHttpClient.Builder()
                 .build();
 
-        String body = null;
         try (Response response = okHttpClient.newCall(request).execute()) {
             int responseCode = response.code();
             System.out.println("responseCode: " + responseCode);
@@ -48,10 +48,12 @@ public class MainTest {
                 System.out.println("error!!");
             }
             if (response.body() != null) {
-                body = response.body().string();
+                String body = response.body().string();
+                System.out.println("body: " + body);
+                Dog dog = mapper.readValue(body, Dog.class);
+                System.out.println("deserialized: " + dog);
             }
         }
-        System.out.println("body: " + body);
     }
 
     @Test
@@ -73,7 +75,6 @@ public class MainTest {
         OkHttpClient okHttpClient = new OkHttpClient.Builder()
                 .build();
 
-        String body = null;
         try (Response response = okHttpClient.newCall(request).execute()) {
             int responseCode = response.code();
             System.out.println("responseCode: " + responseCode);
@@ -82,10 +83,9 @@ public class MainTest {
                 System.out.println("error!!");
             }
             if (response.body() != null) {
-                body = response.body().string();
+                System.out.println("body: " + response.body().string());
             }
         }
-        System.out.println("body: " + body);
     }
 
     @Test
@@ -107,7 +107,6 @@ public class MainTest {
         OkHttpClient okHttpClient = new OkHttpClient.Builder()
                 .build();
 
-        String body = null;
         try (Response response = okHttpClient.newCall(request).execute()) {
             int responseCode = response.code();
             System.out.println("responseCode: " + responseCode);
@@ -116,10 +115,9 @@ public class MainTest {
                 System.out.println("error!!");
             }
             if (response.body() != null) {
-                body = response.body().string();
+                System.out.println("body: " + response.body().string());
             }
         }
-        System.out.println("body: " + body);
     }
 
     @Test
@@ -143,7 +141,6 @@ public class MainTest {
         OkHttpClient okHttpClient = new OkHttpClient.Builder()
                 .build();
 
-        String body = null;
         try (Response response = okHttpClient.newCall(request).execute()) {
             int responseCode = response.code();
             System.out.println("responseCode: " + responseCode);
@@ -152,10 +149,9 @@ public class MainTest {
                 System.out.println("error!!");
             }
             if (response.body() != null) {
-                body = response.body().string();
+                System.out.println("body: " + response.body().string());
             }
         }
-        System.out.println("body: " + body);
     }
 
     @Test
@@ -173,7 +169,6 @@ public class MainTest {
         OkHttpClient okHttpClient = new OkHttpClient.Builder()
                 .build();
 
-        String body = null;
         try (Response response = okHttpClient.newCall(request).execute()) {
             int responseCode = response.code();
             System.out.println("responseCode: " + responseCode);
@@ -182,10 +177,9 @@ public class MainTest {
                 System.out.println("error!!");
             }
             if (response.body() != null) {
-                body = response.body().string();
+                System.out.println("body: " + response.body().string());
             }
         }
-        System.out.println("body: " + body);
     }
 
     @Test
@@ -203,7 +197,6 @@ public class MainTest {
         OkHttpClient okHttpClient = new OkHttpClient.Builder()
                 .build();
 
-        String body = null;
         try (Response response = okHttpClient.newCall(request).execute()) {
             int responseCode = response.code();
             System.out.println("responseCode: " + responseCode);
@@ -212,10 +205,9 @@ public class MainTest {
                 System.out.println("error!!");
             }
             if (response.body() != null) {
-                body = response.body().string();
+                System.out.println("body: " + response.body().string());
             }
         }
-        System.out.println("body: " + body);
     }
 
     @Test
@@ -230,7 +222,6 @@ public class MainTest {
         OkHttpClient okHttpClient = new OkHttpClient.Builder()
                 .build();
 
-        String body = null;
         try (Response response = okHttpClient.newCall(request).execute()) {
             int responseCode = response.code();
             System.out.println("responseCode: " + responseCode);
@@ -239,10 +230,9 @@ public class MainTest {
                 System.out.println("error!!");
             }
             if (response.body() != null) {
-                body = response.body().string();
+                System.out.println("body: " + response.body().string());
             }
         }
-        System.out.println("body: " + body);
     }
 
     @Test
@@ -257,7 +247,6 @@ public class MainTest {
                 .connectionPool(new ConnectionPool(5, 5, TimeUnit.MINUTES))
                 .build();
 
-        String body = null;
         try (Response response = okHttpClient.newCall(request).execute()) {
             int responseCode = response.code();
             System.out.println("responseCode: " + responseCode);
@@ -266,10 +255,9 @@ public class MainTest {
                 System.out.println("error!!");
             }
             if (response.body() != null) {
-                body = response.body().string();
+                System.out.println("body: " + response.body().string());
             }
         }
-        System.out.println("body: " + body);
     }
 
     @Test
@@ -284,7 +272,6 @@ public class MainTest {
                 .addInterceptor(headerInterceptor())
                 .build();
 
-        String body = null;
         try (Response response = okHttpClient.newCall(request).execute()) {
             int responseCode = response.code();
             System.out.println("responseCode: " + responseCode);
@@ -293,10 +280,9 @@ public class MainTest {
                 System.out.println("error!!");
             }
             if (response.body() != null) {
-                body = response.body().string();
+                System.out.println("body: " + response.body().string());
             }
         }
-        System.out.println("body: " + body);
     }
 
     @Test
@@ -313,7 +299,6 @@ public class MainTest {
                 .addNetworkInterceptor(new HttpLoggingInterceptor().setLevel(Level.BODY))
                 .build();
 
-        String body = null;
         try (Response response = okHttpClient.newCall(request).execute()) {
             int responseCode = response.code();
             System.out.println("responseCode: " + responseCode);
@@ -322,10 +307,9 @@ public class MainTest {
                 System.out.println("error!!");
             }
             if (response.body() != null) {
-                body = response.body().string();
+                System.out.println("body: " + response.body().string());
             }
         }
-        System.out.println("body: " + body);
     }
 
     private Interceptor headerInterceptor() {
@@ -347,6 +331,7 @@ public class MainTest {
 
     @Data
     @AllArgsConstructor
+    @NoArgsConstructor
     public static class Dog {
         private int id;
         private String name;
