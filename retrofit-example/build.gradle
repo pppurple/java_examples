@@ -12,8 +12,9 @@ repositories {
 dependencies {
     compile 'com.squareup.retrofit2:retrofit:2.4.0'
     compile 'com.squareup.retrofit2:converter-jackson:2.4.0'
-    compile 'org.projectlombok:lombok:1.16.20'
     compile 'com.fasterxml.jackson.core:jackson-databind:2.9.5'
+    compile 'com.squareup.okhttp3:logging-interceptor:3.10.0'
+    compileOnly 'org.projectlombok:lombok:1.16.22'
     testCompile 'junit:junit:4.12'
     testCompile 'org.assertj:assertj-core:3.10.0'
 }
