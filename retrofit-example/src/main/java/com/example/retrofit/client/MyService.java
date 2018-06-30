@@ -34,19 +34,20 @@ public interface MyService {
     Call<Dog> getDogWithDynamicHeader(@Header("User-Agent") String userAgent);
 
     @GET("dogs/{id}")
-    Call<Dog> getDogById();
+    Call<Dog> getDogById(@Path("id") int id);
 
     @POST("dogs")
     Call<Void> create(@Body Dog dog);
 
     @FormUrlEncoded
     @POST("dogs/form")
-    Call<Void> form(@Field("id") String id,
+    Call<Void> form(@Field("id") int id,
                     @Field("name") String name);
 
     @PUT("dogs/{id}")
-    Call<Void> update(@Body Dog dog);
+    Call<Void> update(@Path("id") int id,
+                      @Body Dog dog);
 
     @DELETE("dogs/{id}")
-    Call<Void> delete();
+    Call<Void> delete(@Path("id") int id);
 }
