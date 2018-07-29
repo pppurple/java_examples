@@ -1,0 +1,24 @@
+plugins {
+    id 'groovy'
+    id 'java'
+}
+
+group 'com.example.hbase'
+version '1.0-SNAPSHOT'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+    maven {
+        url 'https://repository.cloudera.com/cloudera/cloudera-repos/'
+    }
+}
+
+dependencies {
+    compile 'org.codehaus.groovy:groovy-all:2.3.11'
+    compile 'org.apache.hbase:hbase-client:1.2.0-cdh5.13.91'
+    compileOnly 'org.projectlombok:lombok:1.16.22'
+    testCompile 'junit:junit:4.12'
+    testCompile 'org.assertj:assertj-core:3.10.0'
+}
