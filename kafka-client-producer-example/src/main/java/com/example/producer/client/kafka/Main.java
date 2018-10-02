@@ -21,7 +21,7 @@ public class Main {
 
         IntStream.range(0, 10)
                 .forEach(i -> {
-                    ProducerRecord<String, String> record = new ProducerRecord<>("mytopic", "my topic-" + i);
+                    ProducerRecord<String, String> record = new ProducerRecord<>("mytopic", "my_value-" + i);
                     try {
                         // sync send
                         Future<RecordMetadata> send = producer.send(record);
