@@ -5,6 +5,7 @@ import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
 
+import java.time.LocalDateTime;
 import java.util.Properties;
 import java.util.concurrent.Future;
 import java.util.stream.IntStream;
@@ -25,7 +26,12 @@ public class SyncSendProducer {
                     try {
                         // sync send
                         Future<RecordMetadata> send = producer.send(record);
-                        System.out.println(send.get());
+                        RecordMetadata recordMetadata = send.get();
+                        System.out.println("=============================");
+                        System.out.println(LocalDateTime.now());
+                        System.out.println("topic: " + recordMetadata.topic());
+                        System.out.println("partition: " + recordMetadata.partition());
+                        System.out.println("offset: " + recordMetadata.offset());
 
                         Thread.sleep(1_000L);
                     } catch (Exception e) {
