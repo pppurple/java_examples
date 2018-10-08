@@ -20,7 +20,7 @@ public class SyncSendProducer {
 
         KafkaProducer<String, String> producer = new KafkaProducer<>(properties);
 
-        IntStream.range(0, 10)
+        IntStream.range(0, 100)
                 .forEach(i -> {
                     ProducerRecord<String, String> record = new ProducerRecord<>("mytopic", "my_value-" + i);
                     try {
@@ -33,7 +33,7 @@ public class SyncSendProducer {
                         System.out.println("partition: " + recordMetadata.partition());
                         System.out.println("offset: " + recordMetadata.offset());
 
-                        Thread.sleep(1_000L);
+                        Thread.sleep(200L);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
