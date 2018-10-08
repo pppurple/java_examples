@@ -3,6 +3,8 @@ package com.example.producer.client.kafka.consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.clients.consumer.OffsetAndMetadata;
+import org.apache.kafka.common.TopicPartition;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -17,29 +19,40 @@ public class AutoCommitConsumer {
         properties.put(ConsumerConfig.GROUP_ID_CONFIG, "myConsumerGroup");
         properties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer");
         properties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer");
+//        properties.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "true");
+//        properties.put(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG, "1000");
 
         KafkaConsumer<String, String> consumer = new KafkaConsumer<>(properties);
 
-//        consumer.subscribe(Collections.singletonList("mytopic"));
-//        consumer.subscribe(Collections.singletonList("async_topic"));
-        consumer.subscribe(Collections.singletonList("aaa"));
+
+
+        consumer.subscribe(Collections.singletonList("mytopic"));
+//        consumer.subscribe(Collections.singletonList("sync_topic"));
+//        consumer.subscribe(Collections.singletonList("aaa"));
 
         try {
             while (true) {
                 // Deprecated
                 // ConsumerRecords<String, String> records = consumer.poll(1_000);
                 ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(1_000));
-//                ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(1_000));
 
-                System.out.println("record size:" + records.count());
+                if (records.count() > 0) {
+                    System.out.println("=============================");
+                    System.out.println("[record size] " + records.count());
+                }
                 records.forEach(record -> {
                     System.out.println("=============================");
                     System.out.println(LocalDateTime.now());
                     System.out.println("topic: " + record.topic());
                     System.out.println("partition: " + record.partition());
-                    System.out.println("offset: " + record.offset());
                     System.out.println("key: " + record.key());
                     System.out.println("value: " + record.value());
+                    System.out.println("offset: " + record.offset());
+                    TopicPartition topicPartition = new TopicPartition(record.topic(), record.partition());
+                    OffsetAndMetadata offsetAndMetadata = consumer.committed(topicPartition);
+                    if (offsetAndMetadata != null) {
+                        System.out.println("partition offset: " + offsetAndMetadata.offset());
+                    }
                 });
 
                 Thread.sleep(1_000L);
