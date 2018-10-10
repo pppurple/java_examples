@@ -18,9 +18,9 @@ public class AsyncSendProducer {
 
         KafkaProducer<String, String> producer = new KafkaProducer<>(properties);
 
-        IntStream.range(0, 10)
+        IntStream.range(0, 100)
                 .forEach(i -> {
-                    ProducerRecord<String, String> record = new ProducerRecord<>("topic_1", "async_value-" + i);
+                    ProducerRecord<String, String> record = new ProducerRecord<>("async_topic", "async_value-" + i);
                     try {
                         // async send
                         producer.send(record, (metadata, exception) -> {
@@ -32,7 +32,7 @@ public class AsyncSendProducer {
                             System.out.println("offset: " + metadata.offset());
                         });
 
-                        Thread.sleep(1_000L);
+                        Thread.sleep(100L);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
