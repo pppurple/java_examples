@@ -51,7 +51,7 @@ public class ManualSyncCommitConsumer {
                         System.out.println("partition offset: " + offsetAndMetadata.offset());
                     }
 
-                    if (readCount == 5) {
+                    if (readCount == records.count()) {
                         consumer.commitSync();
                         readCount = 0;
                     }
