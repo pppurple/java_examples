@@ -24,11 +24,7 @@ public class AutoCommitConsumer {
 
         KafkaConsumer<String, String> consumer = new KafkaConsumer<>(properties);
 
-
-
-        consumer.subscribe(Collections.singletonList("mytopic"));
-//        consumer.subscribe(Collections.singletonList("sync_topic"));
-//        consumer.subscribe(Collections.singletonList("aaa"));
+        consumer.subscribe(Collections.singletonList("sync_topic"));
 
         try {
             while (true) {
