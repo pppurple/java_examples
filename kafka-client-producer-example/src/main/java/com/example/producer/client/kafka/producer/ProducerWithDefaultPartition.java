@@ -30,8 +30,6 @@ public class ProducerWithDefaultPartition {
                         System.out.print("partition: " + recordMetadata.partition() + ", ");
                         System.out.print("topic: " + recordMetadata.topic() + ", ");
                         System.out.println("value: " + value);
-
-                        Thread.sleep(100L);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
