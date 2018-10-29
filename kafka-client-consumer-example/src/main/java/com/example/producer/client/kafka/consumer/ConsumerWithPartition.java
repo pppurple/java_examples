@@ -19,7 +19,7 @@ public class ConsumerWithPartition {
 
         KafkaConsumer<String, String> consumer = new KafkaConsumer<>(properties);
 
-        consumer.subscribe(Collections.singletonList("topicPar"));
+        consumer.subscribe(Collections.singletonList("topicCus"));
 
         try {
             while (true) {
@@ -31,11 +31,7 @@ public class ConsumerWithPartition {
                     System.out.print("key: " + record.key() + ", " );
                     System.out.println("value: " + record.value());
                 });
-
-                Thread.sleep(1_000L);
             }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
         } finally {
             consumer.close();
         }
