@@ -11,7 +11,7 @@ public class FiveConsumersInGroup {
 
         IntStream.rangeClosed(1, numConsumers)
                 .forEach(i -> {
-                    ConsumeTask consumeTask = new ConsumeTask("myConsumer" + i, "sin");
+                    ConsumeTask consumeTask = new ConsumeTask("myConsumer" + i, "five");
                     executorService.submit(consumeTask);
                 });
     }
