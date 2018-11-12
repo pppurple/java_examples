@@ -19,3 +19,4 @@ build/
 *Org.java
 *LambdaTestBook.java
 *.txt
+out/
