@@ -42,6 +42,5 @@ public class SeekToBeginningConsumer {
         } finally {
             consumer.close();
         }
-
     }
 }

@@ -18,22 +18,6 @@ public class ConsumeTask implements Runnable {
         this("myConsumerGroup", consumerName, topic);
     }
 
-    /*
-    public ConsumeTask(String consumerName, String topic) {
-        this.consumerGroupName = "myConsumerGroup";
-        this.consumerName = consumerName;
-        this.topic = topic;
-
-        // configuration
-        Properties properties = new Properties();
-        properties.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "127.0.0.1:9092");
-        properties.put(ConsumerConfig.GROUP_ID_CONFIG, consumerGroupName);
-        properties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer");
-        properties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer");
-        this.consumer = new KafkaConsumer<>(properties);
-    }
-    */
-
     public ConsumeTask(String consumerGroupName, String consumerName, String topic) {
         this.consumerGroupName = consumerGroupName;
         this.consumerName = consumerName;
@@ -56,8 +40,15 @@ public class ConsumeTask implements Runnable {
             while (true) {
                 ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(1_000));
 
+                // print information about topic record
                 records.forEach(record -> {
-                    System.out.println("group: " + consumerGroupName + ", consumer: " + consumerName + ", partition: " + record.partition() + ", topic: " + record.topic() + ", key: " + record.key() + ", value: " + record.value());
+                    System.out.println("group: " + consumerGroupName
+                            + ", consumer: " + consumerName
+                            + ", partition: " + record.partition()
+                            + ", topic: " + record.topic()
+                            + ", key: " + record.key()
+                            + ", value: " + record.value()
+                    );
                 });
             }
         } finally {
