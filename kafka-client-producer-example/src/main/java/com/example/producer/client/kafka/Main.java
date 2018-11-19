@@ -8,16 +8,16 @@ import com.example.producer.client.kafka.producer.SyncSendProducer;
 public class Main {
     public static void main(String[] args) {
         // sync send
-//        SyncSendProducer syncSendProducer = new SyncSendProducer();
-//        syncSendProducer.syncSend();
+        SyncSendProducer syncSendProducer = new SyncSendProducer();
+        syncSendProducer.syncSend();
 
         // async send
-//        AsyncSendProducer asyncSendProducer = new AsyncSendProducer();
-//        asyncSendProducer.asyncSend();
+        AsyncSendProducer asyncSendProducer = new AsyncSendProducer();
+        asyncSendProducer.asyncSend();
 
         // sync with default partition
-//        ProducerWithDefaultPartition producerWithDefaultPartition = new ProducerWithDefaultPartition();
-//        producerWithDefaultPartition.syncSend();
+        ProducerWithDefaultPartition producerWithDefaultPartition = new ProducerWithDefaultPartition();
+        producerWithDefaultPartition.syncSend();
 
         // sync with custom partition
         ProducerWithCustomPartition producerWithCustomPartition = new ProducerWithCustomPartition();
