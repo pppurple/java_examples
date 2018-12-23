@@ -23,5 +23,9 @@ public class Main {
         // seek to beginning
         SeekToBeginningConsumer seekToBeginningConsumer = new SeekToBeginningConsumer();
         seekToBeginningConsumer.seekToStart();
+
+        // seek to any offset
+        SeekToAnyOffsetConsumer seekToAnyOffsetConsumer = new SeekToAnyOffsetConsumer();
+        seekToAnyOffsetConsumer.seekToAynOffset();
     }
 }
