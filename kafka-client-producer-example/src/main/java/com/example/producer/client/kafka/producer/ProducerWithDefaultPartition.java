@@ -22,13 +22,14 @@ public class ProducerWithDefaultPartition {
         IntStream.range(0, 100)
                 .forEach(i -> {
                     String value = "num" + i;
-                    ProducerRecord<String, String> record = new ProducerRecord<>("topicPar",  value);
+                    ProducerRecord<String, String> record = new ProducerRecord<>("any",  value);
                     try {
                         // sync send
                         Future<RecordMetadata> send = producer.send(record);
                         RecordMetadata recordMetadata = send.get();
                         System.out.print("partition: " + recordMetadata.partition() + ", ");
                         System.out.print("topic: " + recordMetadata.topic() + ", ");
+                        System.out.print("offset: " + recordMetadata.offset() + ", ");
                         System.out.println("value: " + value);
                     } catch (Exception e) {
                         e.printStackTrace();
