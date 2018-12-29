@@ -27,7 +27,7 @@ public class SeekToBeginningConsumer {
             topicPartitions.add(new TopicPartition(partitionInfo.topic(), partitionInfo.partition()));
         }
 
-        // seek from first
+        // seek to first
         consumer.assign(topicPartitions);
         consumer.seekToBeginning(consumer.assignment());
 
