@@ -1,5 +1,6 @@
-package com.example.stream.kafka;
+package com.example.streams.kafka;
 
+import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.StreamsConfig;
@@ -14,17 +15,21 @@ public class Main {
         Properties properties = new Properties();
         properties.put(StreamsConfig.APPLICATION_ID_CONFIG, "myStream");
         properties.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "127.0.0.1:9092");
-        properties.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, "Serdes.StringSerde.class");
-        properties.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, "Serdes.StringSerde.class");
+        properties.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass());
+        properties.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, Serdes.String().getClass());
+//        properties.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, "Serdes.StringSerde.class");
+//        properties.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, "Serdes.StringSerde.class");
 
         StreamsBuilder streamsBuilder = new StreamsBuilder();
-        KStream<String, String> kStream = streamsBuilder.stream("stream_topic");
+//        KStream<String, String> kStream = streamsBuilder.stream("stream_topic");
+        KStream<String, String> kStream = streamsBuilder.stream("s1");
 
         kStream.filter(((key, value) -> {
-            if (value.startsWith("abc")) {
+/*            if (value.startsWith("abc")) {
                 return true;
             }
-            return false;
+            return false;*/
+            return true;
         })).foreach(((key, value) -> {
             System.out.println("key: " + key + ", value: " + value);
         }));

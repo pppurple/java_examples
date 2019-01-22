@@ -2,7 +2,7 @@ plugins {
     id 'java'
 }
 
-group 'com.example.stream.kafka'
+group 'com.example.streams.kafka'
 version '1.0-SNAPSHOT'
 
 sourceCompatibility = 1.8
