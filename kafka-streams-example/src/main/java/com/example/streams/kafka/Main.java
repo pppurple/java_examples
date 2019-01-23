@@ -1,5 +1,7 @@
 package com.example.streams.kafka;
 
+import com.example.streams.kafka.stream.BasicStream;
+import com.example.streams.kafka.stream.Filtering;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.StreamsBuilder;
@@ -11,33 +13,12 @@ import java.util.regex.Pattern;
 
 public class Main {
     public static void main(String[] args) throws InterruptedException {
-        // configuration
-        Properties properties = new Properties();
-        properties.put(StreamsConfig.APPLICATION_ID_CONFIG, "myStream");
-        properties.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "127.0.0.1:9092");
-        properties.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass());
-        properties.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, Serdes.String().getClass());
-//        properties.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, "Serdes.StringSerde.class");
-//        properties.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, "Serdes.StringSerde.class");
+        // basic
+        BasicStream basicStream = new BasicStream();
+        basicStream.start();
 
-        StreamsBuilder streamsBuilder = new StreamsBuilder();
-//        KStream<String, String> kStream = streamsBuilder.stream("stream_topic");
-        KStream<String, String> kStream = streamsBuilder.stream("s1");
-
-        kStream.filter(((key, value) -> {
-/*            if (value.startsWith("abc")) {
-                return true;
-            }
-            return false;*/
-            return true;
-        })).foreach(((key, value) -> {
-            System.out.println("key: " + key + ", value: " + value);
-        }));
-
-        KafkaStreams streams = new KafkaStreams(streamsBuilder.build(), properties);
-
-        streams.start();
-
-        Thread.sleep(100_000L);
+        // filtering
+        Filtering filtering = new Filtering();
+        filtering.start();
     }
 }
