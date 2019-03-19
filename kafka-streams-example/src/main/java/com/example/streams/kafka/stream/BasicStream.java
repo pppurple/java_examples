@@ -14,15 +14,14 @@ public class BasicStream {
         Properties properties = new Properties();
         properties.put(StreamsConfig.APPLICATION_ID_CONFIG, "myStream");
         properties.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "127.0.0.1:9092");
-        properties.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass());
+        properties.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.Integer().getClass());
         properties.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, Serdes.String().getClass());
 
         StreamsBuilder streamsBuilder = new StreamsBuilder();
-        KStream<String, String> kStream = streamsBuilder.stream("s1");
+        KStream<Integer, String> kStream = streamsBuilder.stream("s11");
 
-        kStream.foreach(((key, value) -> {
-            System.out.println("key: " + key + ", value: " + value);
-        }));
+        kStream.filter((key, value) -> value.matches("^[A-Z].+"))
+                .foreach(((key, value) -> System.out.println("key: " + key + ", value: " + value)));
 
         KafkaStreams streams = new KafkaStreams(streamsBuilder.build(), properties);
 
