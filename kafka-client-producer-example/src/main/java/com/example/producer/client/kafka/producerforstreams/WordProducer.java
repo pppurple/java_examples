@@ -27,7 +27,7 @@ public class WordProducer {
                     String key = "key" + i;
                     Random random = new Random();
                     String word = words[random.nextInt(words.length)];
-                    ProducerRecord<String, String> record = new ProducerRecord<>("w12", key, word);
+                    ProducerRecord<String, String> record = new ProducerRecord<>("word", key, word);
                     try {
                         // sync send
                         Future<RecordMetadata> send = producer.send(record);
