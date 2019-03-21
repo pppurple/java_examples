@@ -26,7 +26,8 @@ public class WordCount {
         KTable<String, Long> wordCounts = kStream
                 .groupBy((key, word) -> word)
                 .count(Materialized.as("counts-store"));
-        wordCounts.toStream().to("word-count", Produced.with(Serdes.String(), Serdes.Long()));
+        wordCounts.toStream()
+                .to("word-count", Produced.with(Serdes.String(), Serdes.Long()));
 
         KafkaStreams streams = new KafkaStreams(streamsBuilder.build(), properties);
 
