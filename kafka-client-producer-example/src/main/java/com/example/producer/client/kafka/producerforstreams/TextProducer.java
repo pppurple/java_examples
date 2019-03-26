@@ -4,6 +4,7 @@ import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
+import org.apache.kafka.common.serialization.Serdes;
 
 import java.util.Properties;
 import java.util.concurrent.Future;
@@ -14,8 +15,8 @@ public class TextProducer {
         // configuration
         Properties properties = new Properties();
         properties.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "127.0.0.1:9092");
-        properties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer");
-        properties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer");
+        properties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, Serdes.String().serializer().getClass());
+        properties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, Serdes.String().serializer().getClass());
 
         KafkaProducer<String, String> producer = new KafkaProducer<>(properties);
 
@@ -31,7 +32,7 @@ public class TextProducer {
                 .forEach(i -> {
                     String key = "key" + i;
                     String word = words[i];
-                    ProducerRecord<String, String> record = new ProducerRecord<>("sen11", key, word);
+                    ProducerRecord<String, String> record = new ProducerRecord<>("sen12", key, word);
                     try {
                         // sync send
                         Future<RecordMetadata> send = producer.send(record);
