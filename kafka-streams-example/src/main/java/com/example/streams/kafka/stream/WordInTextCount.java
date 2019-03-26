@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Properties;
 
 public class WordInTextCount {
-    public void start() {
+    public static void main(String[] args) {
         // configuration
         Properties properties = new Properties();
         properties.put(StreamsConfig.APPLICATION_ID_CONFIG, "my_stream3");
@@ -25,15 +25,15 @@ public class WordInTextCount {
         List<String> ignoreWords = Arrays.asList("the", "a", "an");
 
         StreamsBuilder streamsBuilder = new StreamsBuilder();
-        KStream<String, String> kStream = streamsBuilder.stream("sen11");
+        KStream<String, String> kStream = streamsBuilder.stream("text");
 
         KTable<String, Long> wordCounts = kStream
                 .flatMapValues(textLine -> Arrays.asList(textLine.toLowerCase().split("\\W+")))
                 .filter(((key, word) -> !ignoreWords.contains(word)))
                 .groupBy((key, word) -> word)
-                .count(Materialized.as("text-store11"));
+                .count(Materialized.as("text-store"));
         wordCounts.toStream()
-                .to("words-in-text11", Produced.with(Serdes.String(), Serdes.Long()));
+                .to("words-in-text", Produced.with(Serdes.String(), Serdes.Long()));
 
         KafkaStreams streams = new KafkaStreams(streamsBuilder.build(), properties);
 

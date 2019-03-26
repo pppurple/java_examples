@@ -9,7 +9,7 @@ import org.apache.kafka.streams.kstream.KStream;
 import java.util.Properties;
 
 public class BasicStream {
-    public void start() {
+    public static void main(String[] args) {
         // configuration
         Properties properties = new Properties();
         properties.put(StreamsConfig.APPLICATION_ID_CONFIG, "basic_stream");
