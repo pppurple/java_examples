@@ -12,7 +12,7 @@ import java.util.concurrent.Future;
 import java.util.stream.IntStream;
 
 public class WordProducer {
-    public void syncSend() {
+    public static void main(String[] args) {
         // configuration
         Properties properties = new Properties();
         properties.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "127.0.0.1:9092");

@@ -5,9 +5,6 @@ import com.example.producer.client.kafka.producer.ProducerWithCustomPartition;
 import com.example.producer.client.kafka.producer.ProducerWithDefaultPartition;
 import com.example.producer.client.kafka.producer.ProducerWithKeyWithDefaultPartition;
 import com.example.producer.client.kafka.producer.SyncSendProducer;
-import com.example.producer.client.kafka.producerforstreams.IncrementalKeyProducer;
-import com.example.producer.client.kafka.producerforstreams.TextProducer;
-import com.example.producer.client.kafka.producerforstreams.WordProducer;
 
 public class Main {
     public static void main(String[] args) {
@@ -30,17 +27,5 @@ public class Main {
         // sync with custom partition
 //        ProducerWithCustomPartition producerWithCustomPartition = new ProducerWithCustomPartition();
 //        producerWithCustomPartition.syncSend();
-
-        // incremental key producer
-//        IncrementalKeyProducer incrementalKeyProducer = new IncrementalKeyProducer();
-//        incrementalKeyProducer.syncSend();
-
-        // word producer
-//        WordProducer wordProducer = new WordProducer();
-//        wordProducer.syncSend();
-
-        // text producer
-//        TextProducer textProducer = new TextProducer();
-//        textProducer.syncSend();
     }
 }
