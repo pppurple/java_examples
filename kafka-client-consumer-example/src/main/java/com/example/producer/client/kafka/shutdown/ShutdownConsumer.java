@@ -21,7 +21,7 @@ public class ShutdownConsumer {
 
         KafkaConsumer<Integer, String> consumer = new KafkaConsumer<>(properties);
 
-        consumer.subscribe(Collections.singletonList("s"));
+        consumer.subscribe(Collections.singletonList("s1"));
 
         Runtime.getRuntime().addShutdownHook(new Thread("shutdown-thread") {
             public void run() {
@@ -30,7 +30,7 @@ public class ShutdownConsumer {
                 // throw WakeUpException
                 consumer.wakeup();
 
-                System.out.println("end to wakeup.");
+                System.out.println("end to wakeup");
                 try {
                     mainThread.join();
                 } catch (InterruptedException e) {
@@ -57,7 +57,7 @@ public class ShutdownConsumer {
             System.out.println("thrown WakeUpException");
         } finally {
             consumer.close();
-            System.out.println("closed consumer.");
+            System.out.println("closed consumer");
         }
     }
 }

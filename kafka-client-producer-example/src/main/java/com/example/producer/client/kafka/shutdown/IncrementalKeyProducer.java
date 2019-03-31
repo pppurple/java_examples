@@ -24,7 +24,7 @@ public class IncrementalKeyProducer {
         IntStream.range(0, 100)
                 .forEach(i -> {
                     String value = RandomStringUtils.randomAlphabetic(5);
-                    ProducerRecord<Integer, String> record = new ProducerRecord<>("s", i,  value);
+                    ProducerRecord<Integer, String> record = new ProducerRecord<>("s1", i,  value);
                     try {
                         // sync send
                         Future<RecordMetadata> send = producer.send(record);
