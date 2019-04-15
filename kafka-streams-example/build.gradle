@@ -13,5 +13,13 @@ repositories {
 
 dependencies {
     compile 'org.apache.kafka:kafka-streams:2.1.0'
+
+// https://mvnrepository.com/artifact/org.apache.kafka/connect-json
+    compile group: 'org.apache.kafka', name: 'connect-json', version: '2.1.0'
+// https://mvnrepository.com/artifact/org.apache.kafka/connect-api
+    compile group: 'org.apache.kafka', name: 'connect-api', version: '2.1.0'
+    compile 'com.google.guava:guava:27.1-jre'
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.9.8'
+    compileOnly 'org.projectlombok:lombok:1.18.6'
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }
