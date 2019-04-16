@@ -1,18 +1,11 @@
 package com.example.streams.kafka.window;
 
-import com.example.streams.kafka.serdes.CountStoreDeserializer;
 import com.example.streams.kafka.serdes.CountStoreSerde;
-import com.example.streams.kafka.serdes.CountStoreSerializer;
-import com.fasterxml.jackson.databind.JsonNode;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.apache.kafka.common.serialization.Deserializer;
-import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.common.serialization.Serdes;
-import org.apache.kafka.common.serialization.Serializer;
-import org.apache.kafka.connect.json.JsonSerializer;
-import org.apache.kafka.connect.json.JsonDeserializer;
 import org.apache.kafka.streams.KafkaStreams;
+import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.kstream.KStream;
@@ -21,9 +14,10 @@ import org.apache.kafka.streams.kstream.Materialized;
 import org.apache.kafka.streams.kstream.Produced;
 import org.apache.kafka.streams.kstream.TimeWindows;
 import org.apache.kafka.streams.kstream.Windowed;
-import org.apache.kafka.streams.kstream.WindowedSerdes;
 
 import java.time.Duration;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Properties;
 
 public class TumblingWindowStream {
@@ -35,36 +29,18 @@ public class TumblingWindowStream {
         properties.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass());
         properties.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, Serdes.String().getClass());
 
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
+
         StreamsBuilder streamsBuilder = new StreamsBuilder();
         KStream<String, String> kStream = streamsBuilder.stream("tumbling20");
 
-        Duration windowSize = Duration.ofMillis(5_000L);
-
-        Serializer<JsonNode> jsonSerializer = new JsonSerializer();
-        Deserializer<JsonNode> jsonDeserializer = new JsonDeserializer();
-        Serde<JsonNode> jsonSerde = Serdes.serdeFrom(
-                jsonSerializer,
-                jsonDeserializer
-        );
-
-        Serializer<CountStore> countStoreSerializer = new CountStoreSerializer();
-        Deserializer<CountStore> countStoreDeserializer = new CountStoreDeserializer();
-        Serde<CountStore> countStoreSerde = Serdes.serdeFrom(
-                countStoreSerializer,
-                countStoreDeserializer
-        );
-
         KTable<Windowed<String>, CountStore> tumblingWindowCount = kStream
                 .groupBy((key, word) -> word)
-                .windowedBy(TimeWindows.of(windowSize).advanceBy(Duration.ofMillis(5_000L)))
+                .windowedBy(TimeWindows.of(Duration.ofMillis(5_000L)).advanceBy(Duration.ofMillis(5_000L)))
                 .aggregate(CountStore::new,
                         (k, v, countStore) -> {
                             System.out.println("k:" + k + ", v:" + v);
-                            System.out.println("apple:" + countStore.getApple() + ","
-                                    + "banana:" + countStore.getBanana() + ","
-                                    + "lomon:" + countStore.getLemon() + ","
-                                    + "orange:" + countStore.getOrange()
-                            );
+                            System.out.println("name: " + countStore.name + ", count: " + countStore.count);
                             return countStore.increment(v);
                         },
                         Materialized.as("tumbling-counts-store20").with(Serdes.String(), new CountStoreSerde())
@@ -72,16 +48,18 @@ public class TumblingWindowStream {
 
         tumblingWindowCount
                 .toStream()
-/*                .map((k, v) -> {
-                    long count = countMap.get(k.key());
-                    countMap.put(k.key(), count + v);
-                    System.out.println("start:" + k.window().startTime().atZone(ZoneId.systemDefault()));
-                    System.out.println("end:" + k.window().endTime().atZone(ZoneId.systemDefault()));
-                    return new KeyValue<>(k.key(), countMap);
-                })*/
-                .to("tumbling-count20", Produced.with(WindowedSerdes.timeWindowedSerdeFrom(String.class), new CountStoreSerde()));
+                .map((windowed, countStore) -> {
+                    String start = windowed.window().startTime().atZone(ZoneId.systemDefault()).format(formatter);
+                    String end = windowed.window().endTime().atZone(ZoneId.systemDefault()).format(formatter);
+                    System.out.println("start: " + start);
+                    System.out.println("end: " + end);
+                    return new KeyValue<>(start, countStore);
+                })
+                .to("tumbling-count20", Produced.with(Serdes.String(), new CountStoreSerde()));
 
         KafkaStreams streams = new KafkaStreams(streamsBuilder.build(), properties);
+
+        // streams.cleanUp();
 
         streams.start();
     }
@@ -89,12 +67,21 @@ public class TumblingWindowStream {
     @NoArgsConstructor
     @Data
     public static class CountStore {
+        private String name;
+        private int count;
+
         private long apple = 0L;
         private long banana = 0L;
         private long orange = 0L;
         private long lemon = 0L;
 
-        public CountStore increment(String fruit) {
+        CountStore increment(String fruit) {
+            this.name = fruit;
+            this.count++;
+            return this;
+        }
+
+/*        public CountStore increment(String fruit) {
             switch (fruit) {
                 case "apple":
                     this.apple += 1L;
@@ -110,7 +97,7 @@ public class TumblingWindowStream {
                     break;
             }
             return this;
-        }
+        }*/
 
         public CountStore increment(CountStore that) {
             this.apple = this.apple + that.apple;
