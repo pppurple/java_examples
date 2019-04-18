@@ -32,18 +32,14 @@ public class TumblingWindowStream {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
 
         StreamsBuilder streamsBuilder = new StreamsBuilder();
-        KStream<String, String> kStream = streamsBuilder.stream("tumbling20");
+        KStream<String, String> kStream = streamsBuilder.stream("tumbling21");
 
         KTable<Windowed<String>, CountStore> tumblingWindowCount = kStream
                 .groupBy((key, word) -> word)
                 .windowedBy(TimeWindows.of(Duration.ofMillis(5_000L)).advanceBy(Duration.ofMillis(5_000L)))
                 .aggregate(CountStore::new,
-                        (k, v, countStore) -> {
-                            System.out.println("k:" + k + ", v:" + v);
-                            System.out.println("name: " + countStore.name + ", count: " + countStore.count);
-                            return countStore.increment(v);
-                        },
-                        Materialized.as("tumbling-counts-store20").with(Serdes.String(), new CountStoreSerde())
+                        (k, v, countStore) -> countStore.increment(v),
+                        Materialized.as("tumbling-counts-store21").with(Serdes.String(), new CountStoreSerde())
                 );
 
         tumblingWindowCount
@@ -51,11 +47,11 @@ public class TumblingWindowStream {
                 .map((windowed, countStore) -> {
                     String start = windowed.window().startTime().atZone(ZoneId.systemDefault()).format(formatter);
                     String end = windowed.window().endTime().atZone(ZoneId.systemDefault()).format(formatter);
-                    System.out.println("start: " + start);
-                    System.out.println("end: " + end);
+                    countStore.setStart(start);
+                    countStore.setEnd(end);
                     return new KeyValue<>(start, countStore);
                 })
-                .to("tumbling-count20", Produced.with(Serdes.String(), new CountStoreSerde()));
+                .to("tumbling-count21", Produced.with(Serdes.String(), new CountStoreSerde()));
 
         KafkaStreams streams = new KafkaStreams(streamsBuilder.build(), properties);
 
@@ -69,41 +65,12 @@ public class TumblingWindowStream {
     public static class CountStore {
         private String name;
         private int count;
-
-        private long apple = 0L;
-        private long banana = 0L;
-        private long orange = 0L;
-        private long lemon = 0L;
+        private String start;
+        private String end;
 
         CountStore increment(String fruit) {
             this.name = fruit;
             this.count++;
-            return this;
-        }
-
-/*        public CountStore increment(String fruit) {
-            switch (fruit) {
-                case "apple":
-                    this.apple += 1L;
-                    break;
-                case "banana":
-                    this.banana += 1L;
-                    break;
-                case "orange":
-                    this.orange += 1L;
-                    break;
-                case "lemon":
-                    this.lemon += 1L;
-                    break;
-            }
-            return this;
-        }*/
-
-        public CountStore increment(CountStore that) {
-            this.apple = this.apple + that.apple;
-            this.banana = this.banana + that.banana;
-            this.orange = this.orange + that.orange;
-            this.lemon = this.lemon + that.lemon;
             return this;
         }
     }

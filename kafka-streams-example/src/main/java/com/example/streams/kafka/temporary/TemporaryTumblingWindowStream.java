@@ -20,10 +20,12 @@ public class TemporaryTumblingWindowStream {
         properties.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, CountStoreSerde.class.getName());
 
         StreamsBuilder streamsBuilder = new StreamsBuilder();
-        KStream<String, CountStore> kStream = streamsBuilder.stream("tumbling-count20");
+        KStream<String, CountStore> kStream = streamsBuilder.stream("tumbling-count21");
 
         kStream.foreach((k, v) -> {
-            System.out.println(k + " " + v.getName() + ": " + v.getCount());
+            System.out.println(v.getStart() + " - " + v.getEnd()
+                    + " name:" + v.getName()
+                    + ", count: " + v.getCount());
         });
 
         KafkaStreams streams = new KafkaStreams(streamsBuilder.build(), properties);
