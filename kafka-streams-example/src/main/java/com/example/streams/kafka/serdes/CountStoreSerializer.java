@@ -1,6 +1,5 @@
 package com.example.streams.kafka.serdes;
 
-import com.example.streams.kafka.window.TumblingWindowStream;
 import com.example.streams.kafka.window.TumblingWindowStream.CountStore;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -29,6 +28,5 @@ public class CountStoreSerializer implements Serializer<CountStore> {
 
     @Override
     public void close() {
-
     }
 }
