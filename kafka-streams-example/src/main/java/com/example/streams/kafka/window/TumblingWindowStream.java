@@ -1,8 +1,6 @@
 package com.example.streams.kafka.window;
 
 import com.example.streams.kafka.serdes.CountStoreSerde;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.KeyValue;
@@ -58,20 +56,5 @@ public class TumblingWindowStream {
         // streams.cleanUp();
 
         streams.start();
-    }
-
-    @NoArgsConstructor
-    @Data
-    public static class CountStore {
-        private String name;
-        private int count;
-        private String start;
-        private String end;
-
-        CountStore increment(String fruit) {
-            this.name = fruit;
-            this.count++;
-            return this;
-        }
     }
 }

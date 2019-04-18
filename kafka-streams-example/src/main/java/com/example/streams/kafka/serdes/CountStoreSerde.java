@@ -1,6 +1,6 @@
 package com.example.streams.kafka.serdes;
 
-import com.example.streams.kafka.window.TumblingWindowStream.CountStore;
+import com.example.streams.kafka.window.CountStore;
 import org.apache.kafka.common.serialization.Deserializer;
 import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.common.serialization.Serializer;
