@@ -1,7 +1,7 @@
 package com.example.streams.kafka.temporary;
 
 import com.example.streams.kafka.serdes.CountStoreSerde;
-import com.example.streams.kafka.window.TumblingWindowStream.CountStore;
+import com.example.streams.kafka.window.CountStore;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.StreamsBuilder;
@@ -20,7 +20,7 @@ public class TemporaryTumblingWindowStream {
         properties.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, CountStoreSerde.class.getName());
 
         StreamsBuilder streamsBuilder = new StreamsBuilder();
-        KStream<String, CountStore> kStream = streamsBuilder.stream("tumbling-count21");
+        KStream<String, CountStore> kStream = streamsBuilder.stream("tumbling-count");
 
         kStream.foreach((k, v) -> {
             System.out.println(v.getStart() + " - " + v.getEnd()

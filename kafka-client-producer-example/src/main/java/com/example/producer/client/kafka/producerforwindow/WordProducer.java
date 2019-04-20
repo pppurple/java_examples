@@ -23,12 +23,12 @@ public class WordProducer {
 
         String[] words = {"apple", "banana", "orange", "lemon"};
 
-        IntStream.range(0, 100)
+        IntStream.range(0, 10_000)
                 .forEach(i -> {
                     String key = "key" + i;
                     Random random = new Random();
                     String word = words[random.nextInt(words.length)];
-                    ProducerRecord<String, String> record = new ProducerRecord<>("tumbling10", key, word);
+                    ProducerRecord<String, String> record = new ProducerRecord<>("hopping", key, word);
                     try {
                         // sync send
                         Future<RecordMetadata> send = producer.send(record);

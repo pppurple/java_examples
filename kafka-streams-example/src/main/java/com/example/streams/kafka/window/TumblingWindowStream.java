@@ -30,14 +30,14 @@ public class TumblingWindowStream {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
 
         StreamsBuilder streamsBuilder = new StreamsBuilder();
-        KStream<String, String> kStream = streamsBuilder.stream("tumbling21");
+        KStream<String, String> kStream = streamsBuilder.stream("tumbling");
 
         KTable<Windowed<String>, CountStore> tumblingWindowCount = kStream
                 .groupBy((key, word) -> word)
                 .windowedBy(TimeWindows.of(Duration.ofMillis(5_000L)).advanceBy(Duration.ofMillis(5_000L)))
                 .aggregate(CountStore::new,
                         (k, v, countStore) -> countStore.increment(v),
-                        Materialized.as("tumbling-counts-store21").with(Serdes.String(), new CountStoreSerde())
+                        Materialized.as("tumbling-counts-store").with(Serdes.String(), new CountStoreSerde())
                 );
 
         tumblingWindowCount
@@ -49,7 +49,7 @@ public class TumblingWindowStream {
                     countStore.setEnd(end);
                     return new KeyValue<>(start, countStore);
                 })
-                .to("tumbling-count21", Produced.with(Serdes.String(), new CountStoreSerde()));
+                .to("tumbling-count", Produced.with(Serdes.String(), new CountStoreSerde()));
 
         KafkaStreams streams = new KafkaStreams(streamsBuilder.build(), properties);
 
