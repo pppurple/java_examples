@@ -27,7 +27,7 @@ public class ShutdownConsumer {
             public void run() {
                 System.out.println("start to wakeup");
 
-                // throw WakeUpException
+                // thrown WakeUpException
                 consumer.wakeup();
 
                 System.out.println("end to wakeup");
@@ -54,7 +54,7 @@ public class ShutdownConsumer {
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (WakeupException ignore) {
-            System.out.println("thrown WakeUpException");
+            System.out.println("caught WakeUpException");
         } finally {
             consumer.close();
             System.out.println("closed consumer");
