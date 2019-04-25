@@ -11,8 +11,8 @@ public class CountStore {
     private String start;
     private String end;
 
-    CountStore increment(String fruit) {
-        this.name = fruit;
+    CountStore increment(String name) {
+        this.name = name;
         this.count++;
         return this;
     }
