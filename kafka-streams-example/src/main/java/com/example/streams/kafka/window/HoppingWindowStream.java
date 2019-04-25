@@ -32,7 +32,7 @@ public class HoppingWindowStream {
         StreamsBuilder streamsBuilder = new StreamsBuilder();
         KStream<String, String> kStream = streamsBuilder.stream("hopping");
 
-        KTable<Windowed<String>, CountStore> tumblingWindowCount = kStream
+        KTable<Windowed<String>, CountStore> tumblingWindowCountTable = kStream
                 .groupBy((key, word) -> word)
                 .windowedBy(TimeWindows.of(Duration.ofMillis(5_000L)).advanceBy(Duration.ofMillis(2_000L)))
                 .aggregate(CountStore::new,
@@ -40,7 +40,7 @@ public class HoppingWindowStream {
                         Materialized.as("hopping-counts-store").with(Serdes.String(), new CountStoreSerde())
                 );
 
-        tumblingWindowCount
+        tumblingWindowCountTable
                 .toStream()
                 .map((windowed, countStore) -> {
                     String start = windowed.window().startTime().atZone(ZoneId.systemDefault()).format(formatter);
