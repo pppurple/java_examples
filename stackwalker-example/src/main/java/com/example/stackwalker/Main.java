@@ -16,5 +16,11 @@ public class Main {
 
         // call via nested class
         Caller.call("call!!!");
+
+        // skip
+        Caller.skip("skip");
+
+        // filter
+        Caller.filter("filter");
     }
 }

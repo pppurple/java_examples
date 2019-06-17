@@ -1,5 +1,7 @@
 package com.example.stackwalker.service;
 
+import com.example.stackwalker.foo.bar.FooBarService;
+
 public class Caller {
     public static void callWhoIsCallingMe(String str) {
         MyService.whoIsCallingMe(str);
@@ -11,6 +13,14 @@ public class Caller {
 
     public static void call(String str) {
         NestedCaller.callFromNestedClass(str);
+    }
+
+    public static void skip(String str) {
+        MyService.skipItself(str);
+    }
+
+    public static void filter(String str) {
+        FooBarService.walk(str);
     }
 
     public static class NestedCaller {

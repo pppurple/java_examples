@@ -1,6 +1,5 @@
 package com.example.stackwalker.service;
 
-
 import java.lang.StackWalker.Option;
 import java.lang.StackWalker.StackFrame;
 import java.util.List;
@@ -21,5 +20,15 @@ public class MyService {
 
         List<StackFrame> frames = stackWalker.walk(frame -> frame.collect(Collectors.toList()));
         frames.forEach(f -> System.out.println(f.getDeclaringClass()));
+    }
+
+    public static void skipItself(String str) {
+        System.out.println(str);
+
+        StackWalker stackWalker = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE);
+        stackWalker.walk(frame -> frame.collect(Collectors.toList()))
+                .stream()
+                .skip(1)
+                .forEach(f -> System.out.println(f.getDeclaringClass()));
     }
 }
