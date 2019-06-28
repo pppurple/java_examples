@@ -13,7 +13,7 @@ public class Main {
         Caller.callWhoIsCallingMe("via caller");
         System.out.println("-------------------------");
 
-        // call via Caller
+        // walking
         Caller.callWalking("walking");
         System.out.println("-------------------------");
 
