@@ -9,7 +9,15 @@ public class Main {
         System.out.println("length: " + str.length());
         System.out.println("BreakIterator(java): " + getGraphemeLength(str));
         System.out.println("BreakIterator(ICU): " + getGraphemeLengthWithIcu(str));
-        System.out.println("java13+: " +  str.split("\\b{g}").length);
+        System.out.println("java13+: " + str.split("\\b{g}").length);
+
+        // a + 🏻
+        final String aAndSkinTone = "a" + "\uD83C\uDFFB";
+        System.out.println(aAndSkinTone);
+        System.out.println("length: " + aAndSkinTone.length());
+        System.out.println("BreakIterator(java): " + getGraphemeLength(aAndSkinTone));
+        System.out.println("BreakIterator(ICU): " + getGraphemeLengthWithIcu(aAndSkinTone));
+        System.out.println("java13+: " + aAndSkinTone.split("\\b{g}").length);
     }
 
     public static int getGraphemeLength(String value) {
